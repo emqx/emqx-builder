@@ -1,0 +1,62 @@
+name: Build docker images
+
+on:
+  workflow_dispatch:
+    inputs:
+      otp_version:
+        required: true
+
+jobs:
+    linux-multi-platform:
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+              platform:
+                - [ubuntu20.04, "linux/amd64,linux/arm64"]
+                - [ubuntu18.04, "linux/amd64,linux/arm64"]
+                - [ubuntu16.04, "linux/amd64,linux/arm64"]
+                - [debian10   , "linux/amd64,linux/arm64"]
+                - [debian9    , "linux/amd64,linux/arm64"]
+                - [centos8    , "linux/amd64,linux/arm64"]
+                - [centos7    , "linux/amd64,linux/arm64"]
+                - [centos6    , "linux/amd64"]
+                - [opensuse   , "linux/amd64"]
+                - [raspbian10 , "linux/arm64"]
+                - [raspbian9  , "linux/arm64"]
+                - [alpine3.14 , "linux/amd64,linux/arm64"]
+
+        steps:
+        - uses: actions/checkout@v2
+        - uses: docker/setup-buildx-action@v1
+        - uses: docker/setup-qemu-action@v1
+          with:
+            image: tonistiigi/binfmt:latest
+            platforms: all
+        - uses: docker/login-action@v1
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ github.token }}
+        - name: get image
+          id: image
+          run: |
+              date_image="ghcr.io/${{ github.repository }}:${{ github.event.inputs.otp_version }}-${{ matrix.platform[0] }}-$(date '+%Y%m%d')"
+              dateless_image="ghcr.io/${{ github.repository }}:${{ github.event.inputs.otp_version }}-${{ matrix.platform[0] }}"
+              echo "::set-output name=date_image::$date_image"
+              echo "::set-output name=dateless_image::$dateless_image"
+              docker pull $dateless_image || true
+        - uses: docker/build-push-action@v2
+          with:
+            push: true 
+            pull: true
+            cache-from: ${{ steps.image.outputs.dateless_image }}
+            platforms: ${{ matrix.platform[1] }}
+            tags: |
+                ${{ steps.image.outputs.date_image }}
+                ${{ steps.image.outputs.dateless_image }}
+            build-args: |
+              OTP_VERSION=${{ github.event.inputs.otp_version }}
+            file: ${{ matrix.platform[0] }}/Dockerfile
+            context: .

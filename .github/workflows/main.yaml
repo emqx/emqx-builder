@@ -42,11 +42,11 @@ jobs:
         - name: get image
           id: image
           run: |
-              date_image="ghcr.io/${{ github.repository }}:${{ github.event.inputs.otp_version }}-${{ matrix.platform[0] }}-$(date '+%Y%m%d')"
-              dateless_image="ghcr.io/${{ github.repository }}:${{ github.event.inputs.otp_version }}-${{ matrix.platform[0] }}"
-              echo "::set-output name=date_image::$date_image"
-              echo "::set-output name=dateless_image::$dateless_image"
-              docker pull $dateless_image || true
+              vsn_image="ghcr.io/${{ github.repository }}/$(cat ./EMQX_VERSION):${{ github.event.inputs.otp_version }}-${{ matrix.platform[0] }}"
+              image="ghcr.io/${{ github.repository }}:${{ github.event.inputs.otp_version }}-${{ matrix.platform[0] }}"
+              echo "::set-output name=image::$image"
+              echo "::set-output name=vsn_image::$vsn_image"
+              docker pull $vsn_image || true
         - uses: docker/build-push-action@v2
           with:
             push: true 
@@ -54,8 +54,8 @@ jobs:
             cache-from: ${{ steps.image.outputs.dateless_image }}
             platforms: ${{ matrix.platform[1] }}
             tags: |
-                ${{ steps.image.outputs.date_image }}
-                ${{ steps.image.outputs.dateless_image }}
+                ${{ steps.image.outputs.image }}
+                ${{ steps.image.outputs.vsn_image }}
             build-args: |
               OTP_VERSION=${{ github.event.inputs.otp_version }}
             file: ${{ matrix.platform[0] }}/Dockerfile

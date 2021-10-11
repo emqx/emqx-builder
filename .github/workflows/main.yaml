@@ -95,6 +95,6 @@ jobs:
           with:
             tag_name: ${{ github.ref }}
             release_name: EMQ X Builder Helper ${{ github.ref }} Released
-            body: EMQ X Builder Helper ${{ github.ref }} Released
+            body_path: RELEASE.md
             draft: false
             prerelease: false

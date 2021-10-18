@@ -1,5 +1,9 @@
 name: Build docker images
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:
   push:
@@ -45,6 +49,15 @@ jobs:
 
         steps:
         - uses: actions/checkout@v2
+        - name: Get ref
+          id: ref
+          run: echo "::set-output name=ref::${GITHUB_REF##*/}"
+        - uses: actions/cache@v2
+          with:
+            path: /tmp/.docker-buildx-cache
+            key: docker-buildx-${{ matrix.otp}}-${{ matrix.platform[0] }}-${{ steps.ref.outputs.ref }}
+            restore-keys: |
+                docker-buildx-${{ matrix.otp}}-${{ matrix.platform[0] }}-
         - uses: docker/setup-buildx-action@v1
         - uses: docker/setup-qemu-action@v1
           with:
@@ -55,30 +68,29 @@ jobs:
             registry: ghcr.io
             username: ${{ github.actor }}
             password: ${{ github.token }}
-        - name: get image
-          id: image
-          run: |
-              image="ghcr.io/${{ github.repository }}:${{ matrix.otp }}-${{ matrix.platform[0] }}"
-              docker pull $image || true
-
-              if ${{ startsWith(github.ref, 'refs/tags/') }}; then
-                version=$(echo ${{ github.ref }} | sed -r  "s ^refs/heads/|^refs/tags/(.*) \1 g")
-                vsn_image="ghcr.io/${{ github.repository }}/${version}:${{ matrix.otp }}-${{ matrix.platform[0] }}"
-                image="${image},$vsn_image"
-              fi
-
-              echo "::set-output name=image::$image"
+        - uses: docker/metadata-action@v3
+          id: meta
+          with:
+            images: ghcr.io/${{ github.repository }}/${{ steps.ref.outputs.ref }}
+            tags: |
+              type=raw,value=${{ matrix.otp }}-${{ matrix.platform[0] }}
         - uses: docker/build-push-action@v2
           with:
             push: true
             pull: true
-            cache-from: ${{ steps.image.outputs.image }}
+            cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
+            cache-to: type=local,dest=/tmp/.docker-buildx-cache-new,mode=max
             platforms: ${{ matrix.platform[1] }}
-            tags: ${{ steps.image.outputs.image }}
+            tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
             build-args: |
               OTP_VERSION=${{ matrix.otp }}
             file: ${{ matrix.platform[0] }}/Dockerfile
             context: .
+        - name: Update cache
+          run: |
+            rm -rf /tmp/.docker-buildx-cache
+            mv /tmp/.docker-buildx-cache-new /tmp/.docker-buildx-cache
 
     release:
         runs-on: ubuntu-latest

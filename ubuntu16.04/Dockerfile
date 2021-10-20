@@ -60,10 +60,6 @@ ENV PATH=/usr/local/python3.7.4/bin:$PATH
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
-ARG OTP_VERSION
-COPY get-otp.sh /get-otp.sh
-RUN /get-otp.sh ${OTP_VERSION}
-
 RUN apt-get clean\
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

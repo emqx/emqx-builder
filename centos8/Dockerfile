@@ -24,10 +24,6 @@ RUN yum install -y python3-pip && ln -s /usr/bin/pip3 /usr/bin/pip
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
-ARG OTP_VERSION
-COPY get-otp.sh /get-otp.sh
-RUN /get-otp.sh ${OTP_VERSION}
-
 # cleanup
 RUN yum clean packages \
  && rm -rf /tmp/* /var/tmp/*

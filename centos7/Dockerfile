@@ -38,16 +38,11 @@ RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automak
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
-ARG OTP_VERSION
-
-COPY get-otp.sh /get-otp.sh
+# only amd64 worked
 RUN yum install -y  openssl11 openssl11-devel || true && \
     mkdir /usr/local/openssl && \
     ln -s /usr/lib64/openssl11 /usr/local/openssl/lib && \
-    ln -s /usr/include/openssl11/ /usr/local/openssl/include && \
-    /get-otp.sh ${OTP_VERSION} && \
-    rm -rf /usr/local/openssl && \
-    yum remove -y openssl11 openssl11-devel
+    ln -s /usr/include/openssl11/ /usr/local/openssl/include
 
 # cleanup
 RUN yum clean packages \

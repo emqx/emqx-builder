@@ -56,10 +56,6 @@ ENV OPENSSL_ROOT_DIR=/usr/lib/arm-linux-gnueabihf/
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build 3.21.0
 
-ARG OTP_VERSION
-COPY get-otp.sh /get-otp.sh
-RUN /get-otp.sh ${OTP_VERSION}
-
 # cleanup
 RUN apt-get clean\
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

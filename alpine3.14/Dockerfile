@@ -51,8 +51,4 @@ RUN apk add py-pip
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
-ARG OTP_VERSION
-COPY get-otp.sh /get-otp.sh
-RUN /get-otp.sh ${OTP_VERSION}
-
 CMD [ "/bin/sh" ]

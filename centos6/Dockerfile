@@ -19,8 +19,6 @@ RUN yum install -y centos-release-scl && \
     sed -i 's/mirror.centos.org/vault.centos.org/g' /etc/yum.repos.d/CentOS-SCLo-scl.repo && \
     yum install -y devtoolset-8-gcc devtoolset-8-gcc-c++
 
-
-
 WORKDIR /
 
 RUN yum install -y openssl-devel bzip2-devel expat-devel gdbm-devel readline-devel sqlite-devel gcc gcc-c++ openssl-devel \
@@ -46,10 +44,6 @@ COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh download
 ENV PATH=/cmake/bin:$PATH
 RUN cmake --version
-
-ARG OTP_VERSION
-COPY get-otp.sh /get-otp.sh
-RUN /get-otp.sh ${OTP_VERSION}
 
 # cleanup
 RUN yum clean packages \

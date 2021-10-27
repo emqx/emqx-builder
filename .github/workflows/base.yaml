@@ -31,11 +31,12 @@ jobs:
           - [opensuse   , "linux/amd64"]
           - [raspbian10 , "linux/arm64"]
           - [raspbian9  , "linux/arm64"]
-          - [alpine3.14 , "linux/amd64,linux/arm64,linux/arm/v7"]
+          - [alpine3.14 , "linux/amd64,linux/arm64"]
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
+        if: matrix.platform[0] != 'opensuse'
         with:
           path: /tmp/.docker-buildx-cache
           key: docker-buildx-${{ matrix.platform[0] }}

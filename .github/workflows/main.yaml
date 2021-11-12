@@ -9,8 +9,6 @@ on:
   push:
     tags:
       - "*"
-    branches:
-      - main
 
 jobs:
   prepare:
@@ -46,11 +44,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        if: matrix.platform[0] != 'opensuse'
+      - uses: aws-actions/configure-aws-credentials@v1
         with:
-          path: /tmp/.docker-buildx-cache
-          key: docker-buildx-${{ matrix.platform[0] }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Get cache
+        run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }} /tmp/.docker-buildx-cache
       - uses: docker/setup-buildx-action@v1
       - uses: docker/setup-qemu-action@v1
         with:
@@ -79,9 +79,7 @@ jobs:
           file: ${{ matrix.platform[0] }}/Dockerfile
           context: .
       - name: Update cache
-        run: |
-          rm -rf /tmp/.docker-buildx-cache
-          mv /tmp/.docker-buildx-cache-new /tmp/.docker-buildx-cache
+        run: aws s3 sync --delete /tmp/.docker-buildx-cache-new s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }}
 
   build:
     runs-on: ubuntu-latest

@@ -13,4 +13,10 @@ For example: `OTP-23.3.4.9-2`
 
 ## Add new OTP versions to build
 
-Add the new version to `OTP_VERSION`, one line for each version (NOTE: without `OTP-` prefix).
+Add the new version to `RELEASE.md`
+
+## Image tag scheme
+
+```
+ghcr.io/emqx/emqx-builder/4.4:23.3.4.9-2-centos7
+```

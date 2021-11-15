@@ -20,7 +20,7 @@ jobs:
     - name: get otp_version
       id: otp
       run: |
-        otp_version=$(cat ./RELEASE.md | grep -E "+\sOTP-.*" | sed 's/+\sOTP-//g' | jq -R -s -c 'split("\n")[:-1]')
+        otp_version=$(grep -E "^\+\sOTP-.*" ./RELEASE.md | sed 's/\+\sOTP-//g' | jq -R -s -c 'split("\n")[:-1]')
         echo "::set-output name=version::$otp_version"
 
   base:

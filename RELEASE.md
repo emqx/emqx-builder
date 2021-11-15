@@ -1,5 +1,5 @@
-New EMQ X Builder 4.4 Released
+New EMQ X 5.0 Builder is Released
 
-OTP versions for emqx/otp.git:
+OTP versions from emqx/otp.git:
 
-+ OTP-23.3.4.9-2
++ OTP-24.1.5-1

@@ -72,8 +72,5 @@ jobs:
           file: ${{ matrix.platform[0] }}/Dockerfile
           context: .
       - name: Update cache
-        run: |
-          rm -rf /tmp/.docker-buildx-cache
-          mv /tmp/.docker-buildx-cache-new /tmp/.docker-buildx-cache
-      - name: Update cache
+        if: matrix.platform[0] != 'opensuse'
         run: aws s3 sync --delete /tmp/.docker-buildx-cache-new s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }}

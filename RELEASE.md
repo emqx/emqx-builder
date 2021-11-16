@@ -1,13 +1,5 @@
-EMQ X Builder Helper 5.0 Released
+New EMQ X 5.0 Builder is Released
 
-Support OTP version for emqx/otp.git
+OTP versions from emqx/otp.git:
 
-+ 23.2.7.2-emqx-2
-+ 24.0.5-emqx-1
-+ 24.1.1-emqx-1
-
-Support EMQ X Broker 5.0 version
-
-+ 5.0-alpha.*
-+ 5.0-beta.*
-+ 5.0.*
++ OTP-24.1.5-1

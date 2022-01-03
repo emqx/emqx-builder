@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       otp: ${{ steps.otp.outputs.version }}
+      elixir: ${{ steps.elixir.outputs.version }}
     steps:
     - uses: actions/checkout@v2
     - name: get otp_version
@@ -22,6 +23,11 @@ jobs:
       run: |
         otp_version=$(grep -E "^\+\sOTP-.*" ./RELEASE.md | sed 's/\+\sOTP-//g' | jq -R -s -c 'split("\n")[:-1]')
         echo "::set-output name=version::$otp_version"
+    - name: get elixir_version
+      id: elixir
+      run: |
+        elixir_version=$(grep -E "^\+\sElixir-.*" ./RELEASE.md | sed 's/\+\sElixir-//g' | jq -R -s -c 'split("\n")[:-1]')
+        echo "::set-output name=version::$elixir_version"
 
   base:
     runs-on: ubuntu-latest
@@ -94,6 +100,7 @@ jobs:
       fail-fast: false
       matrix:
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
+        elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:
           - [ubuntu20.04, "linux/amd64,linux/arm64"]
           - [ubuntu18.04, "linux/amd64,linux/arm64"]
@@ -128,7 +135,7 @@ jobs:
       with:
         images: ghcr.io/${{ github.repository }}/${{ steps.ref.outputs.ref }}
         tags: |
-          type=raw,value=${{ matrix.otp }}-${{ matrix.platform[0] }}
+          type=raw,value=${{ matrix.otp }}-${{ matrix.elixir }}-${{ matrix.platform[0] }}
     - uses: docker/build-push-action@v2
       with:
         push: true
@@ -140,6 +147,7 @@ jobs:
         build-args: |
           BUILD_FROM=ghcr.io/${{ github.repository }}/base:${{ matrix.platform[0] }}
           OTP_VERSION=${{ matrix.otp }}
+          ELIXIR_VERSION=${{ matrix.elixir }}
         file: ./Dockerfile
         context: .
 

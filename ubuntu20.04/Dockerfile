@@ -55,5 +55,9 @@ ENV PATH=/usr/local/python3.7.4/bin:$PATH
 RUN apt-get clean\
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Elixir complains if runs without UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
 WORKDIR /
 CMD [ "/bin/bash" ]

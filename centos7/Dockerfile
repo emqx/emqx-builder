@@ -54,4 +54,10 @@ ENV BASH_ENV=/opt/rh/devtoolset-8/enable \
     ENV=/opt/rh/devtoolset-8/enable \
     PROMPT_COMMAND=". /opt/rh/devtoolset-8/enable"
 
+# Elixir complains if runs without UTF-8
+# CentOS 7, exceptionally, has an `en_US.UTF-8` override as does not
+# have `C.UTF-8`.
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+
 CMD [ "/bin/bash" ]

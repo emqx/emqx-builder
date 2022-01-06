@@ -24,11 +24,6 @@ if [ "$ELIXIR_VERSION_IN_FILE" != "$ELIXIR_VERSION" ]; then
     exit 1
 fi
 
-# Elixir will complain if compile not using utf-8
-
-export LC_ALL=C.UTF-8
-export LANG=C.UTF-8
-
 make -j $(nproc)
 make install
 

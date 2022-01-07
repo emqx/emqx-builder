@@ -135,7 +135,7 @@ jobs:
       with:
         images: ghcr.io/${{ github.repository }}/${{ steps.ref.outputs.ref }}
         tags: |
-          type=raw,value=${{ matrix.otp }}-${{ matrix.elixir }}-${{ matrix.platform[0] }}
+          type=raw,value=${{ matrix.elixir }}-${{ matrix.otp }}-${{ matrix.platform[0] }}
     - uses: docker/build-push-action@v2
       with:
         push: true

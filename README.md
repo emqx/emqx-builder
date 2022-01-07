@@ -28,8 +28,9 @@ we can still find an up-to-date docker image for it.
 ## Image tag scheme
 
 ```
-ghcr.io/emqx/emqx-builder/<BUILDER_GIT_TAG>:24.1.5-1-1.13.1-ubuntu20.04
+ghcr.io/emqx/emqx-builder/<BUILDER_GIT_TAG>:1.13.1-24.1.5-1-ubuntu20.04
 ```
 
-Where `BUILDER_GIT_TAG` is of scheme `4.4-1` for images to build EMQ X 4.4
-and `5.0-1`, `5.0-2` for images to build EMQ X 5.0
+Where `BUILDER_GIT_TAG` is of scheme `4.4-1` for images to build EMQ X
+4.4 and `5.0-1`, `5.0-2` for images to build EMQ X 5.0.  `1.13.1` and
+`24.1.5-1` are the Elixir and OTP version, respectively.

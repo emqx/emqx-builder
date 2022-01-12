@@ -55,5 +55,9 @@ RUN apt-get clean\
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
+# Elixir complains if runs without UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
 WORKDIR /
 CMD [ "/bin/bash" ]

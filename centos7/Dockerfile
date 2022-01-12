@@ -44,14 +44,27 @@ RUN yum install -y  openssl11 openssl11-devel || true && \
     ln -s /usr/lib64/openssl11 /usr/local/openssl/lib && \
     ln -s /usr/include/openssl11/ /usr/local/openssl/include
 
+# We have to reinstall `glibc-common` after removing the override just
+# for the `arm64` platform build of CentOS 7.  While just setting the
+# locale works for `amd64`, even `en_US.UTF-8`, which is in the
+# override for `arm64`, is not available...
+RUN sed -i -e '/override_install_langs/d' /etc/yum.conf && \
+    yum -q -y reinstall glibc-common
+
 # cleanup
 RUN yum clean packages \
- && rm -rf /tmp/* /var/tmp/*
+    && rm -rf /tmp/* /var/tmp/*
 
 WORKDIR /
 
 ENV BASH_ENV=/opt/rh/devtoolset-8/enable \
     ENV=/opt/rh/devtoolset-8/enable \
     PROMPT_COMMAND=". /opt/rh/devtoolset-8/enable"
+
+# Elixir complains if runs without UTF-8
+# CentOS 7, exceptionally, has an `en_US.UTF-8` override as does not
+# have `C.UTF-8`.
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 CMD [ "/bin/bash" ]

@@ -32,5 +32,12 @@ ghcr.io/emqx/emqx-builder/<BUILDER_GIT_TAG>:1.13.1-24.1.5-1-ubuntu20.04
 ```
 
 Where `BUILDER_GIT_TAG` is of scheme `4.4-1` for images to build EMQ X
-4.4 and `5.0-1`, `5.0-2` for images to build EMQ X 5.0.  `1.13.1` and
+4.4.X and `5.0-1`, `5.0-2` for images to build EMQ X 5.0.X.  `1.13.1` and
 `24.1.5-1` are the Elixir and OTP version, respectively.
+
+Notice that we do **not** track the _patch_ version of EMQ X in our
+image scheme: we have one base image for each minor release that can
+be shared on a non one-to-one basis with several EMQ X patch releases.
+
+For example: EMQ X `5.0.0` and `5.0.3` may share the same
+`emqx-builder/5.0-2` image.

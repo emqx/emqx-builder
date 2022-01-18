@@ -9,22 +9,22 @@ ROOT='/'
 
 cd "$ROOT"
 
-name="OTP-${OTP_VERSION}"
+name=$OTP_VERSION
 curl --silent --show-error -fkL "https://github.com/emqx/otp/archive/${name}.zip" -o "${name}.zip"
 
 unzip -q "$name.zip"
 rm -f "$name.zip"
 
-mv "otp-$name" "otp-${OTP_VERSION}"
+# mv "otp-$name" "otp-${OTP_VERSION}"
 cd "otp-${OTP_VERSION}"
 
-OTP_VERSION_IN_FILE="$(cat ./OTP_VERSION | tr -d '\n' | tr -d '\r')"
-if [ "$OTP_VERSION_IN_FILE" != "$OTP_VERSION" ]; then
-    echo "OTP_VERSION tag and file mismatch"
-    echo "tag: $OTP_VERSION"
-    echo "file: $OTP_VERSION_IN_FILE"
-    exit 1
-fi
+# OTP_VERSION_IN_FILE="$(cat ./OTP_VERSION | tr -d '\n' | tr -d '\r')"
+# if [ "$OTP_VERSION_IN_FILE" != "$OTP_VERSION" ]; then
+#     echo "OTP_VERSION tag and file mismatch"
+#     echo "tag: $OTP_VERSION"
+#     echo "file: $OTP_VERSION_IN_FILE"
+#     exit 1
+# fi
 
 if [ ! -f configure ]; then
     ./otp_build autoconf

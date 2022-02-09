@@ -1,4 +1,4 @@
-ARG BUILD_FROM=centos:8
+ARG BUILD_FROM=rockylinux:8
 FROM ${BUILD_FROM}
 
 RUN yum install epel-release -y && yum update -y

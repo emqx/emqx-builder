@@ -25,10 +25,8 @@ jobs:
           - [ubuntu16.04, "linux/amd64,linux/arm64"]
           - [debian10   , "linux/amd64,linux/arm64"]
           - [debian9    , "linux/amd64,linux/arm64"]
-          - [centos8    , "linux/amd64,linux/arm64"]
+          - [rockylinux8, "linux/amd64,linux/arm64"]
           - [centos7    , "linux/amd64,linux/arm64"]
-          - [centos6    , "linux/amd64"]
-          # - [opensuse   , "linux/amd64"]
           - [raspbian10 , "linux/arm64"]
           - [raspbian9  , "linux/arm64"]
           - [alpine3.14 , "linux/amd64,linux/arm64"]
@@ -36,13 +34,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: aws-actions/configure-aws-credentials@v1
-        if: matrix.platform[0] != 'opensuse'
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Get cache
-        if: matrix.platform[0] != 'opensuse'
         run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }} /tmp/.docker-buildx-cache
       - uses: docker/setup-buildx-action@v1
       - uses: docker/setup-qemu-action@v1
@@ -72,5 +68,4 @@ jobs:
           file: ${{ matrix.platform[0] }}/Dockerfile
           context: .
       - name: Update cache
-        if: matrix.platform[0] != 'opensuse'
         run: aws s3 sync --delete /tmp/.docker-buildx-cache-new s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }}

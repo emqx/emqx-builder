@@ -28,5 +28,9 @@ RUN /get-cmake.sh build
 RUN yum clean packages \
  && rm -rf /tmp/* /var/tmp/*
 
+# Elixir complains if runs without UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
 WORKDIR /
 CMD [ "/bin/bash" ]

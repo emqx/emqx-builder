@@ -23,6 +23,7 @@ jobs:
           - [ubuntu20.04, "linux/amd64,linux/arm64"]
           - [ubuntu18.04, "linux/amd64,linux/arm64"]
           - [ubuntu16.04, "linux/amd64,linux/arm64"]
+          - [debian11   , "linux/amd64,linux/arm64"]
           - [debian10   , "linux/amd64,linux/arm64"]
           - [debian9    , "linux/amd64,linux/arm64"]
           - [rockylinux8, "linux/amd64,linux/arm64"]
@@ -67,9 +68,5 @@ jobs:
           labels: ${{ steps.base_meta.outputs.labels }}
           file: ${{ matrix.platform[0] }}/Dockerfile
           context: .
-      - name: Update cache
-        run: |
-          rm -rf /tmp/.docker-buildx-cache
-          mv /tmp/.docker-buildx-cache-new /tmp/.docker-buildx-cache
       - name: Update cache
         run: aws s3 sync --delete /tmp/.docker-buildx-cache-new s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }}

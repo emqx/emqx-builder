@@ -16,7 +16,9 @@ RUN apt-get update && apt-get install -y \
     libffi-dev \
     unixodbc \
     unixodbc-dev \
-    jq
+    jq  \
+    flex \
+    bison
 
 RUN cmake --version
 

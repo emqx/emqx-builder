@@ -20,7 +20,9 @@ RUN apt-get update && apt-get install -y \
     make \
     zlib1g-dev \
     libffi-dev \
-    jq
+    jq \
+    flex \
+    bison  
 
 RUN apt-get update &&  apt-get install -y unixodbc unixodbc-dev
 

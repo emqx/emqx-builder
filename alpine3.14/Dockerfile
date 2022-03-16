@@ -30,7 +30,9 @@ RUN apk add --no-cache --virtual .build-deps \
                 elixir \
                 openjdk8 \
                 bash \
-                jq
+                jq \
+                flex \
+                bison
 
 # install python
 RUN curl -L -o /tmp/Python-${PYTHON_VERSION}.tgz https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz 

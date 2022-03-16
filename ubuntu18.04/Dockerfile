@@ -23,7 +23,9 @@ RUN apt-get update && apt-get install -y \
     apt-transport-https \
     ca-certificates \
     software-properties-common \
-    jq
+    jq \
+    flex \
+    bison
 
 RUN cmake --version
 RUN apt-get update &&  apt-get install -y unixodbc unixodbc-dev

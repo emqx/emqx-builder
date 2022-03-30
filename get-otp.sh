@@ -30,8 +30,7 @@ if [ ! -f configure ]; then
     ./otp_build autoconf
 fi
 
-# for centos7 openssl1.0.2 and openssl1.1 coexist
-if [ -d /usr/lib64/openssl11 ]; then
+if [ -d /usr/local/openssl ]; then
     extra_config="--with-ssl=/usr/local/openssl/"
 else
     extra_config=""

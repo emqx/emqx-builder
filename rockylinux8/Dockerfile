@@ -18,7 +18,9 @@ RUN yum install -y wget \
                    python3 \
                    python3-pip \
                    flex \
-                   bison
+                   bison \
+                   autoconf \
+                   automake
 
 RUN yum groupinstall -y "Development Tools"
 

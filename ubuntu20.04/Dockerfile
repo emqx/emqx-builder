@@ -29,7 +29,9 @@ RUN apt-get update && apt-get install -y \
     flex \
     bison \
     python3 \
-    python3-pip
+    python3-pip \
+    autotools-dev \
+    automake
 
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 RUN ln -sf /usr/bin/pip3 /usr/bin/pip

@@ -32,7 +32,9 @@ RUN apk add --no-cache --virtual .build-deps \
                 bash \
                 jq \
                 flex \
-                bison
+                bison \
+                autoconf \
+                automake
 
 # install python
 RUN curl -L -o /tmp/Python-${PYTHON_VERSION}.tgz https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz 

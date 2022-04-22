@@ -18,7 +18,9 @@ RUN apt-get update && apt-get install -y \
     unixodbc-dev \
     jq  \
     flex \
-    bison
+    bison \
+    autotools-dev \
+    automake 
 
 RUN cmake --version
 

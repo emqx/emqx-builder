@@ -13,7 +13,6 @@ RUN apk add --no-cache --virtual .build-deps \
                 coreutils \
                 curl \
                 dpkg-dev dpkg \
-                elixir \
                 flex \
                 g++ \
                 gcc \

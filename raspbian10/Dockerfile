@@ -1,26 +1,25 @@
 FROM balenalib/rpi-raspbian:buster
 
 RUN apt-get update && apt-get install -y \
-    wget \
-    curl \
-    unzip \
-    cmake \
-    libssl-dev \
-    automake \
     autoconf \
-    libncurses5-dev \
-    gcc \
+    automake \
+    autotools-dev \
+    bison \
+    cmake \
+    curl \
+    flex \
     g++ \
-    make \
-    zlib1g-dev \
+    gcc \
+    jq \
     libffi-dev \
+    libncurses5-dev \
+    libssl-dev \
+    make \
     unixodbc \
     unixodbc-dev \
-    jq \
-    flex \
-    bison \
-    autotools-dev \
-    automake 
+    unzip \
+    wget \
+    zlib1g-dev
 
 RUN cmake --version
 

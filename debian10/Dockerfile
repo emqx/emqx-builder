@@ -2,31 +2,30 @@ ARG BUILD_FROM=debian:10
 FROM ${BUILD_FROM}
 
 RUN apt-get update && apt-get install -y \
-    procps \
-    git \
-    wget \
-    zip \
-    unzip \
-    vim \
-    build-essential \
-    debhelper \
-    curl \
-    libssl-dev \
-    automake \
     autoconf \
-    libncurses5-dev \
-    gcc \
+    automake \
+    autotools-dev \
+    bison \
+    build-essential \
+    curl \
+    debhelper \
+    flex \
     g++ \
-    make \
-    zlib1g-dev \
+    gcc \
+    git \
+    jq \
     libffi-dev \
+    libncurses5-dev \
+    libssl-dev \
+    make \
+    procps \
     unixodbc \
     unixodbc-dev \
-    jq \
-    flex \
-    bison \
-    autotools-dev \
-    automake 
+    unzip \
+    vim \
+    wget \
+    zip \
+    zlib1g-dev
 
 RUN apt-get install -y gcc make zlib1g-dev libffi-dev libssl-dev \
     && wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz \

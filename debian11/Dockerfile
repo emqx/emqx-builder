@@ -2,33 +2,32 @@ ARG BUILD_FROM=debian:11
 FROM ${BUILD_FROM}
 
 RUN apt-get update && apt-get install -y \
-    procps \
-    git \
-    wget \
-    zip \
-    unzip \
-    vim \
-    build-essential \
-    debhelper \
-    curl \
-    libssl-dev \
-    automake \
     autoconf \
-    libncurses5-dev \
-    gcc \
-    g++ \
-    make \
-    zlib1g-dev \
-    libffi-dev \
-    unixodbc \
-    unixodbc-dev \
-    jq \
-    flex \
+    automake \
+    autotools-dev \
     bison \
+    build-essential \
+    curl \
+    debhelper \
+    flex \
+    g++ \
+    gcc \
+    git \
+    jq \
+    libffi-dev \
+    libncurses5-dev \
+    libssl-dev \
+    make \
+    procps \
     python3 \
     python3-pip \
-    autotools-dev \
-    automake 
+    unixodbc \
+    unixodbc-dev \
+    unzip \
+    vim \
+    wget \
+    zip \
+    zlib1g-dev
 
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 RUN ln -sf /usr/bin/pip3 /usr/bin/pip

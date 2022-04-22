@@ -2,29 +2,28 @@ ARG BUILD_FROM=debian:9
 FROM ${BUILD_FROM}
 
 RUN apt-get update && apt-get install -y \
-    procps \
+    autoconf \
+    automake \
+    autotools-dev \
+    bison \
+    build-essential \
+    curl \
+    debhelper \
+    flex \
+    g++ \
+    gcc \
     git \
-    wget \
-    zip \
+    jq \
+    libffi-dev \
+    libncurses5-dev \
+    libssl-dev \
+    make \
+    procps \
     unzip \
     vim \
-    build-essential \
-    debhelper \
-    curl \
-    libssl-dev \
-    automake \
-    autoconf \
-    libncurses5-dev \
-    gcc \
-    g++ \
-    make \
-    zlib1g-dev \
-    libffi-dev \
-    jq \
-    flex \
-    bison \
-    autotools-dev \
-    automake 
+    wget \
+    zip \
+    zlib1g-dev
 
 RUN apt-get update &&  apt-get install -y unixodbc unixodbc-dev
 

@@ -4,34 +4,33 @@ FROM ${BUILD_FROM}
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    git \
-    wget \
-    curl \
-    zip \
-    unzip \
-    vim \
-    build-essential \
-    debhelper \
-    libssl-dev \
-    automake \
-    autoconf \
-    libncurses5-dev \
-    gcc \
-    g++ \
-    make \
-    cmake \
-    zlib1g-dev \
-    libffi-dev \
     apt-transport-https \
-    ca-certificates \
-    software-properties-common \
-    jq \
-    flex \
+    autoconf \
+    automake \
+    autotools-dev \
     bison \
+    build-essential \
+    ca-certificates \
+    cmake \
+    curl \
+    debhelper \
+    flex \
+    g++ \
+    gcc \
+    git \
+    jq \
+    libffi-dev \
+    libncurses5-dev \
+    libssl-dev \
+    make \
     python3 \
     python3-pip \
-    autotools-dev \
-    automake
+    software-properties-common \
+    unzip \
+    vim \
+    wget \
+    zip \
+    zlib1g-dev
 
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 RUN ln -sf /usr/bin/pip3 /usr/bin/pip

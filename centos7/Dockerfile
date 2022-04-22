@@ -2,7 +2,7 @@ ARG BUILD_FROM=centos:7
 FROM ${BUILD_FROM}
 
 RUN yum install epel-release -y && yum update -y
-RUN yum install -y wget zip which curl unzip vim ncurses-devel unixODBC-devel jq libatomic openssl-devel zlib-devel openssl11 flex-devel bison-devel autoconf automake
+RUN yum install -y wget zip which curl unzip vim ncurses-devel unixODBC-devel jq libatomic openssl-devel zlib-devel openssl11 flex-devel bison-devel autoconf
 RUN yum groupinstall -y "Development Tools"
 
 RUN yum install -y centos-release-scl

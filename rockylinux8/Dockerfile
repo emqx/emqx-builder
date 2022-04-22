@@ -2,23 +2,26 @@ ARG BUILD_FROM=rockylinux:8
 FROM ${BUILD_FROM}
 
 RUN yum install epel-release -y && yum update -y
-RUN yum install -y wget \
-                   git \
-                   zip \
-                   which \
+RUN yum install -y \
+                   autoconf \
+                   automake \
+                   bison \
                    curl \
-                   unzip \
-                   vim \
-                   ncurses-devel \
-                   openssl-devel \
-                   unixODBC \
-                   unixODBC-devel \
+                   flex \
+                   git \
                    jq \
                    libatomic \
+                   ncurses-devel \
+                   openssl-devel \
                    python3 \
                    python3-pip \
-                   flex \
-                   bison
+                   unixODBC \
+                   unixODBC-devel \
+                   unzip \
+                   vim \
+                   wget \
+                   which \
+                   zip
 
 RUN yum groupinstall -y "Development Tools"
 

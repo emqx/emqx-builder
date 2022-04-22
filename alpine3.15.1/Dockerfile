@@ -2,35 +2,35 @@ ARG BUILD_FROM=alpine:3.15.1
 FROM ${BUILD_FROM}
 
 RUN apk add --no-cache --virtual .build-deps \
-                ca-certificates \
-                zip \
-                dpkg-dev dpkg \
-                gcc \
-                g++ \
-                libc-dev \
-                linux-headers \
-                make \
                 autoconf \
-                ncurses-dev \
-                openssl-dev \
-                unixodbc-dev \
-                lksctp-tools-dev \
-                tar \
-                git \
-                wget \
-                curl \
+                automake \
+                bash \
                 bsd-compat-headers \
+                ca-certificates \
                 coreutils \
+                curl \
+                dpkg-dev dpkg \
+                g++ \
+                gcc \
+                git \
+                jq \
+                libc-dev \
+                libffi-dev \
+                linux-headers \
+                lksctp-tools-dev \
+                make \
+                ncurses-dev \
+                openjdk8 \
                 openssh-client \
                 openssh-keygen \
-                zlib-dev \
-                libffi-dev \
-                elixir \
-                openjdk8 \
-                bash \
-                jq \
+                openssl-dev \
+                py3-pip \
                 python3 \
-                py3-pip
+                tar \
+                unixodbc-dev \
+                wget \
+                zip \
+                zlib-dev
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 

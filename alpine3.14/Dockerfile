@@ -4,35 +4,35 @@ FROM ${BUILD_FROM}
 ENV PYTHON_VERSION=3.7.4
 
 RUN apk add --no-cache --virtual .build-deps \
-                ca-certificates \
-                zip \
-                dpkg-dev dpkg \
-                gcc \
-                g++ \
-                libc-dev \
-                linux-headers \
-                make \
                 autoconf \
-                ncurses-dev \
-                openssl-dev \
-                unixodbc-dev \
-                lksctp-tools-dev \
-                tar \
-                git \
-                wget \
-                curl \
+                automake \
+                bash \
+                bison \
                 bsd-compat-headers \
+                ca-certificates \
                 coreutils \
+                curl \
+                dpkg-dev dpkg \
+                flex \
+                g++ \
+                gcc \
+                git \
+                jq \
+                libc-dev \
+                libffi-dev \
+                linux-headers \
+                lksctp-tools-dev \
+                make \
+                ncurses-dev \
+                openjdk8 \
                 openssh-client \
                 openssh-keygen \
-                zlib-dev \
-                libffi-dev \
-                elixir \
-                openjdk8 \
-                bash \
-                jq \
-                flex \
-                bison
+                openssl-dev \
+                tar \
+                unixodbc-dev \
+                wget \
+                zip \
+                zlib-dev
 
 # install python
 RUN curl -L -o /tmp/Python-${PYTHON_VERSION}.tgz https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz 

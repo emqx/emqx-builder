@@ -21,13 +21,6 @@ WORKDIR /
 COPY get-openssl.sh /get-openssl.sh
 RUN /get-openssl.sh
 
-RUN yum install -y python3
-## we do not want python2 anymore
-RUN ln -sf /usr/bin/python3 /usr/bin/python
-RUN ln -sf /usr/bin/pip3 /usr/bin/pip
-## yum needs python2
-RUN sed 's/python/python2/g' -i /usr/bin/yum
-
 RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
     && tar -zxvf /tmp/automake-1.14.tar.gz -C /tmp \
     && cd /tmp/automake-1.14 \
@@ -46,6 +39,14 @@ RUN /get-cmake.sh build
 # override for `arm64`, is not available...
 RUN sed -i -e '/override_install_langs/d' /etc/yum.conf && \
     yum -q -y reinstall glibc-common
+
+RUN yum install -y python3
+## we do not want python2 anymore
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+RUN ln -sf /usr/bin/pip3 /usr/bin/pip
+
+## yum needs python2
+RUN sed 's/python/python2/g' -i /usr/bin/yum
 
 # cleanup
 RUN yum clean packages \

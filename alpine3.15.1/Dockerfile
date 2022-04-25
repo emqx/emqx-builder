@@ -16,6 +16,7 @@ RUN apk add --no-cache --virtual .build-deps \
                 jq \
                 libc-dev \
                 libffi-dev \
+                libtool \
                 linux-headers \
                 lksctp-tools-dev \
                 make \

@@ -11,6 +11,7 @@ RUN yum install -y \
                    git \
                    jq \
                    libatomic \
+                   libtool \
                    ncurses-devel \
                    openssl-devel \
                    python3 \

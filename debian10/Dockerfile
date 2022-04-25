@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     libffi-dev \
     libncurses5-dev \
     libssl-dev \
+    libtool \
     make \
     procps \
     unixodbc \

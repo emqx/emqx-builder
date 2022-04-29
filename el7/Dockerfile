@@ -2,7 +2,7 @@ ARG BUILD_FROM=centos:7
 FROM ${BUILD_FROM}
 
 RUN yum install epel-release -y && yum update -y
-RUN yum install -y wget zip which curl unzip vim ncurses-devel unixODBC-devel jq libatomic openssl-devel zlib-devel openssl11
+RUN yum install -y wget zip which curl unzip vim ncurses-devel unixODBC-devel jq libatomic openssl-devel zlib-devel openssl11 flex-devel bison-devel autoconf libtool
 RUN yum groupinstall -y "Development Tools"
 
 RUN yum install -y centos-release-scl
@@ -21,13 +21,6 @@ WORKDIR /
 COPY get-openssl.sh /get-openssl.sh
 RUN /get-openssl.sh
 
-RUN yum install -y python3
-## we do not want python2 anymore
-RUN ln -sf /usr/bin/python3 /usr/bin/python
-RUN ln -sf /usr/bin/pip3 /usr/bin/pip
-## yum needs python2
-RUN sed 's/python/python2/g' -i /usr/bin/yum
-
 RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
     && tar -zxvf /tmp/automake-1.14.tar.gz -C /tmp \
     && cd /tmp/automake-1.14 \
@@ -40,12 +33,33 @@ RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automak
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
+# We have to reinstall `glibc-common` after removing the override just
+# for the `arm64` platform build of CentOS 7.  While just setting the
+# locale works for `amd64`, even `en_US.UTF-8`, which is in the
+# override for `arm64`, is not available...
+RUN sed -i -e '/override_install_langs/d' /etc/yum.conf && \
+    yum -q -y reinstall glibc-common
+
+RUN yum install -y python3
+## we do not want python2 anymore
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+RUN ln -sf /usr/bin/pip3 /usr/bin/pip
+
+## yum needs python2
+RUN sed 's/python/python2/g' -i /usr/bin/yum
+
 # cleanup
 RUN yum clean packages \
- && rm -rf /tmp/* /var/tmp/*
+    && rm -rf /tmp/* /var/tmp/*
 
 ENV BASH_ENV=/opt/rh/devtoolset-8/enable \
     ENV=/opt/rh/devtoolset-8/enable \
     PROMPT_COMMAND=". /opt/rh/devtoolset-8/enable"
+
+# Elixir complains if runs without UTF-8
+# CentOS 7, exceptionally, has an `en_US.UTF-8` override as does not
+# have `C.UTF-8`.
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 CMD [ "/bin/bash" ]

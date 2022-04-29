@@ -2,21 +2,27 @@ ARG BUILD_FROM=rockylinux:8
 FROM ${BUILD_FROM}
 
 RUN yum install epel-release -y && yum update -y
-RUN yum install -y wget \
-                   git \
-                   zip \
-                   which \
+RUN yum install -y \
+                   autoconf \
+                   automake \
+                   bison \
                    curl \
-                   unzip \
-                   vim \
-                   ncurses-devel \
-                   openssl-devel \
-                   unixODBC \
-                   unixODBC-devel \
+                   flex \
+                   git \
                    jq \
                    libatomic \
+                   libtool \
+                   ncurses-devel \
+                   openssl-devel \
                    python3 \
-                   python3-pip
+                   python3-pip \
+                   unixODBC \
+                   unixODBC-devel \
+                   unzip \
+                   vim \
+                   wget \
+                   which \
+                   zip
 
 RUN yum groupinstall -y "Development Tools"
 
@@ -37,6 +43,10 @@ RUN /get-cmake.sh build
 # cleanup
 RUN yum clean packages \
  && rm -rf /tmp/* /var/tmp/*
+
+# Elixir complains if runs without UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 WORKDIR /
 CMD [ "/bin/bash" ]

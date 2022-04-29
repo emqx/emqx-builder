@@ -1,22 +1,26 @@
 FROM balenalib/rpi-raspbian:buster
 
 RUN apt-get update && apt-get install -y \
-    wget \
-    curl \
-    unzip \
-    cmake \
-    libssl-dev \
-    automake \
     autoconf \
-    libncurses5-dev \
-    gcc \
+    automake \
+    autotools-dev \
+    bison \
+    cmake \
+    curl \
+    flex \
     g++ \
-    make \
-    zlib1g-dev \
+    gcc \
+    jq \
     libffi-dev \
+    libncurses5-dev \
+    libssl-dev \
+    libtool \
+    make \
     unixodbc \
     unixodbc-dev \
-    jq
+    unzip \
+    wget \
+    zlib1g-dev
 
 RUN cmake --version
 
@@ -49,7 +53,7 @@ RUN apt-get install -y gcc make zlib1g-dev libffi-dev libssl-dev \
     && ln -s /usr/local/python3.7.4/bin/python3.7 /usr/bin/python
 RUN curl -k -L -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py \
     && python /tmp/get-pip.py \
-    && python3 /tmp/get-pip.py 
+    && python3 /tmp/get-pip.py
 ENV PATH=/usr/local/python3.7.4/bin:$PATH
 ENV OPENSSL_ROOT_DIR=/usr/lib/arm-linux-gnueabihf/
 
@@ -59,6 +63,10 @@ RUN /get-cmake.sh build 3.21.0
 # cleanup
 RUN apt-get clean\
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Elixir complains if runs without UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 WORKDIR /
 CMD [ "/bin/bash" ]

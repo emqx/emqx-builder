@@ -2,28 +2,32 @@ ARG BUILD_FROM=ubuntu:18.04
 FROM ${BUILD_FROM}
 
 RUN apt-get update && apt-get install -y \
-    git \
-    wget \
+    apt-transport-https \
+    autoconf \
+    automake \
+    autotools-dev \
+    bison \
+    build-essential \
+    ca-certificates \
+    cmake \
     curl \
-    zip \
+    debhelper \
+    flex \
+    g++ \
+    gcc \
+    git \
+    jq \
+    libffi-dev \
+    libncurses5-dev \
+    libssl-dev \
+    libtool \
+    make \
+    software-properties-common \
     unzip \
     vim \
-    build-essential \
-    debhelper \
-    libssl-dev \
-    automake \
-    autoconf \
-    libncurses5-dev \
-    gcc \
-    g++ \
-    make \
-    cmake \
-    zlib1g-dev \
-    libffi-dev \
-    apt-transport-https \
-    ca-certificates \
-    software-properties-common \
-    jq
+    wget \
+    zip \
+    zlib1g-dev
 
 RUN cmake --version
 RUN apt-get update &&  apt-get install -y unixodbc unixodbc-dev
@@ -54,6 +58,10 @@ RUN apt-get clean\
 
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
+
+# Elixir complains if runs without UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 WORKDIR /
 CMD [ "/bin/bash" ]

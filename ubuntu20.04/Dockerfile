@@ -4,30 +4,34 @@ FROM ${BUILD_FROM}
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    git \
-    wget \
+    apt-transport-https \
+    autoconf \
+    automake \
+    autotools-dev \
+    bison \
+    build-essential \
+    ca-certificates \
+    cmake \
     curl \
-    zip \
+    debhelper \
+    flex \
+    g++ \
+    gcc \
+    git \
+    jq \
+    libffi-dev \
+    libncurses5-dev \
+    libssl-dev \
+    libtool \
+    make \
+    python3 \
+    python3-pip \
+    software-properties-common \
     unzip \
     vim \
-    build-essential \
-    debhelper \
-    libssl-dev \
-    automake \
-    autoconf \
-    libncurses5-dev \
-    gcc \
-    g++ \
-    make \
-    cmake \
-    zlib1g-dev \
-    libffi-dev \
-    apt-transport-https \
-    ca-certificates \
-    software-properties-common \
-    jq \
-    python3 \
-    python3-pip
+    wget \
+    zip \
+    zlib1g-dev
 
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 RUN ln -sf /usr/bin/pip3 /usr/bin/pip
@@ -42,6 +46,10 @@ WORKDIR /
 # cleanup
 RUN apt-get clean\
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Elixir complains if runs without UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 WORKDIR /
 CMD [ "/bin/bash" ]

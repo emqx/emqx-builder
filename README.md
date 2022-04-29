@@ -1,3 +1,5 @@
+NOTE: Must sync Dockerfile chages from main-4.4 branch!
+
 # Docker images for EMQX Builder
 
 This repo holds the Dockerfile and build scripts to build

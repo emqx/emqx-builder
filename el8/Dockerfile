@@ -22,7 +22,8 @@ RUN yum install -y \
                    vim \
                    wget \
                    which \
-                   zip
+                   zip \
+                   systemd
 
 RUN yum groupinstall -y "Development Tools"
 

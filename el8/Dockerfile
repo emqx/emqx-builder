@@ -22,7 +22,7 @@ RUN yum install -y autoconf \
                    vim \
                    wget \
                    which \
-                   zip \
+                   zip
 
 RUN yum groupinstall -y "Development Tools"
 

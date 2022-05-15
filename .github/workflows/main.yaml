@@ -65,7 +65,7 @@ jobs:
       - uses: docker/metadata-action@v3
         id: base_meta
         with:
-          images: ghcr.io/${{ github.repository }}/base-${{ emqx_minor }}
+          images: ghcr.io/${{ github.repository }}/base-${{ matrix.emqx_minor }}
           tags: type=raw,value=${{ matrix.platform[0] }}
       - name: Build base image
         uses: docker/build-push-action@v2
@@ -135,7 +135,7 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-args: |
-          BUILD_FROM=ghcr.io/${{ github.repository }}/base-${{ emqx_minor }}:${{ matrix.platform[0] }}
+          BUILD_FROM=ghcr.io/${{ github.repository }}/base-${{ matrix.emqx_minor }}:${{ matrix.platform[0] }}
           OTP_VERSION=${{ matrix.otp }}
         file: ./Dockerfile
         context: .

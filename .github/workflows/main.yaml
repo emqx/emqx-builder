@@ -97,6 +97,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        emqx_minor:
+          - 4.4
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
         elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:

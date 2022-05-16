@@ -80,7 +80,7 @@ ENV BASH_ENV=/opt/rh/devtoolset-8/enable \
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 
-# default seems to be /usr/local/share/aclocal, which doesn't work
-ENV ACLOCAL_PATH=/usr/share/aclocal
+# merge the two dirs
+ENV ACLOCAL_PATH=/usr/share/aclocal:/usr/local/share/aclocal
 
 CMD [ "/bin/bash" ]

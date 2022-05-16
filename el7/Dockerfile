@@ -80,4 +80,7 @@ ENV BASH_ENV=/opt/rh/devtoolset-8/enable \
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 
+# merge the two dirs
+ENV ACLOCAL_PATH=/usr/share/aclocal:/usr/local/share/aclocal
+
 CMD [ "/bin/bash" ]

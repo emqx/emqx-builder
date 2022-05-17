@@ -5,11 +5,13 @@ RUN apk add --no-cache --virtual .build-deps \
                 autoconf \
                 automake \
                 bash \
+                bison \
                 bsd-compat-headers \
                 ca-certificates \
                 coreutils \
                 curl \
                 dpkg-dev dpkg \
+                flex \
                 g++ \
                 gcc \
                 git \

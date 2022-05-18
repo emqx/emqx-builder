@@ -10,8 +10,6 @@ RUN yum install -y autoconf \
                    libatomic \
                    libtool \
                    ncurses-devel \
-                   openssl-devel \
-                   openssl11 \
                    systemd \
                    unixODBC-devel \
                    unzip \
@@ -31,13 +29,11 @@ RUN /get-git.sh
 
 WORKDIR /
 
-# install openssl 1.1.1n to /usr/local/openssl
-# the openssl11 yum install is still needed
-# /user/local/openssl is to confgure/build Erlang/OTP
-# openssl11 is for runtime
-# there is no easy way to use one version for both
 COPY get-openssl.sh /get-openssl.sh
 RUN /get-openssl.sh
+ENV OPENSSL_ROOT_DIR=/usr/local/openssl
+ENV PATH=/usr/local/openssl/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/openssl/lib:$LD_LIBRARY_PATH
 
 RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
     && tar -zxvf /tmp/automake-1.14.tar.gz -C /tmp \

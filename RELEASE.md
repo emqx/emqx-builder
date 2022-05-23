@@ -7,4 +7,4 @@ OTP versions from emqx/otp.git:
 
 Elixir versions from elixir-lang/elixir.git:
 
-+ Elixir-1.13.3
++ Elixir-1.13.4

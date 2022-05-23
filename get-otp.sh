@@ -31,7 +31,9 @@ if [ ! -f configure ]; then
 fi
 
 if [ -d /usr/local/openssl ]; then
-    extra_config="--with-ssl=/usr/local/openssl/"
+    # for envs where openssl is installed from source
+    # we static-link with libcrypto
+    extra_config="--with-ssl=/usr/local/openssl --disable-dynamic-ssl-lib"
 else
     extra_config=""
 fi

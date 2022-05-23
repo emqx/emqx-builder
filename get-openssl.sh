@@ -9,6 +9,7 @@ curl -o "$FILE" -f -L "https://www.openssl.org/source/$FILE"
 
 tar zxf "$FILE"
 pushd "$NAME"
+# NOTE: this prefix path is used in get-otp.sh
 ./config --prefix=/usr/local/openssl
 make install_sw
 popd

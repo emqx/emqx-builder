@@ -21,6 +21,21 @@ RUN yum install -y autoconf \
                    zip \
                    zlib-devel
 
+RUN yum install -y \
+    libsasl2 \
+    libsasl2-dev \
+    krb5-workstation \
+    cyrus-sasl-devel \
+    cyrus-sasl \
+    cyrus-sasl-gssapi
+
+
+# The following is not necessary for Kerberos authentication but makes testing
+# https://github.com/kafka4beam/sasl_auth easier
+RUN yum install -y \
+    krb5-server \
+    expect
+
 RUN yum groupinstall -y "Development Tools"
 
 RUN yum install -y centos-release-scl

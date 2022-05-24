@@ -26,9 +26,6 @@ RUN yum install -y autoconf \
 
 RUN yum groupinstall -y "Development Tools"
 
-COPY get-openssl.sh /get-openssl.sh
-RUN /get-openssl.sh
-
 RUN yum install -y python3
 
 ## we do not want python2 anymore

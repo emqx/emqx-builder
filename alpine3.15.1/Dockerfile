@@ -10,14 +10,20 @@ RUN apk add --no-cache --virtual .build-deps \
                 ca-certificates \
                 coreutils \
                 curl \
+                cyrus-sasl-dev \
+                cyrus-sasl-gssapiv2 \
                 dpkg-dev dpkg \
                 flex \
                 g++ \
                 gcc \
                 git \
                 jq \
+                krb5 \
+                krb5-dev \
+                krb5-libs \
                 libc-dev \
                 libffi-dev \
+                libsasl \
                 libtool \
                 linux-headers \
                 lksctp-tools-dev \
@@ -33,7 +39,10 @@ RUN apk add --no-cache --virtual .build-deps \
                 unixodbc-dev \
                 wget \
                 zip \
-                zlib-dev
+                zlib-dev \
+                krb5-server \
+                expect
+
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 

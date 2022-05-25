@@ -10,6 +10,8 @@ RUN yum install -y autoconf \
                    libatomic \
                    libtool \
                    ncurses-devel \
+                   openssl11 \
+                   openssl11-devel \
                    systemd \
                    unixODBC-devel \
                    unzip \
@@ -29,12 +31,10 @@ RUN /get-git.sh
 
 WORKDIR /
 
-COPY get-openssl.sh /get-openssl.sh
-RUN /get-openssl.sh
+RUN mkdir -p /usr/local/openssl/include; \
+    ln -s /usr/include/openssl11/openssl /usr/local/openssl/include/openssl; \
+    ln -s /usr/lib64/openssl11 /usr/local/openssl/lib
 ENV OPENSSL_ROOT_DIR=/usr/local/openssl
-ENV PATH=/usr/local/openssl/bin:$PATH
-ENV LD_LIBRARY_PATH=/usr/local/openssl/lib:$LD_LIBRARY_PATH
-
 RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
     && tar -zxvf /tmp/automake-1.14.tar.gz -C /tmp \
     && cd /tmp/automake-1.14 \

@@ -12,6 +12,7 @@ RUN yum install -y autoconf \
                    libatomic \
                    libtool \
                    ncurses-devel \
+                   openssl \
                    openssl-devel \
                    python3 \
                    python3-pip \

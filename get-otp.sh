@@ -30,15 +30,7 @@ if [ ! -f configure ]; then
     ./otp_build autoconf
 fi
 
-if [ -d /usr/local/openssl ]; then
-    # for envs where openssl is installed from source
-    # we static-link with libcrypto
-    extra_config="--with-ssl=/usr/local/openssl --disable-dynamic-ssl-lib"
-else
-    extra_config=""
-fi
-
-./configure --disable-hipe ${extra_config}
+./configure --disable-hipe
 make -j $(nproc)
 make install
 

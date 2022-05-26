@@ -12,6 +12,7 @@ RUN yum install -y autoconf \
                    libatomic \
                    libtool \
                    ncurses-devel \
+                   openssl \
                    openssl-devel \
                    python3 \
                    python3-pip \
@@ -25,9 +26,6 @@ RUN yum install -y autoconf \
                    zip
 
 RUN yum groupinstall -y "Development Tools"
-
-COPY get-openssl.sh /get-openssl.sh
-RUN /get-openssl.sh
 
 RUN yum install -y python3
 

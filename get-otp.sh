@@ -31,11 +31,10 @@ if [ ! -f configure ]; then
 fi
 
 if [ -d /usr/local/openssl ]; then
-    extra_config="--with-ssl=/usr/local/openssl/"
+    extra_config="--with-ssl=/usr/local/openssl"
 else
     extra_config=""
 fi
-
 ./configure --disable-hipe ${extra_config}
 make -j $(nproc)
 make install

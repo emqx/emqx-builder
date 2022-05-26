@@ -34,7 +34,7 @@ WORKDIR /
 RUN mkdir -p /usr/local/openssl/include; \
     ln -s /usr/include/openssl11/openssl /usr/local/openssl/include/openssl; \
     ln -s /usr/lib64/openssl11 /usr/local/openssl/lib
-ENV OPENSSL_ROOT_DIR=/usr/local/openssl
+
 RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
     && tar -zxvf /tmp/automake-1.14.tar.gz -C /tmp \
     && cd /tmp/automake-1.14 \
@@ -45,7 +45,7 @@ RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automak
     && automake --version
 
 COPY get-cmake.sh /get-cmake.sh
-RUN /get-cmake.sh build
+RUN env OPENSSL_ROOT_DIR=/usr/local/openssl /get-cmake.sh build
 
 # We have to reinstall `glibc-common` after removing the override just
 # for the `arm64` platform build of CentOS 7.  While just setting the

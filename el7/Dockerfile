@@ -31,10 +31,6 @@ RUN /get-git.sh
 
 WORKDIR /
 
-RUN mkdir -p /usr/local/openssl/include; \
-    ln -s /usr/include/openssl11/openssl /usr/local/openssl/include/openssl; \
-    ln -s /usr/lib64/openssl11 /usr/local/openssl/lib
-
 RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
     && tar -zxvf /tmp/automake-1.14.tar.gz -C /tmp \
     && cd /tmp/automake-1.14 \
@@ -43,6 +39,12 @@ RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automak
     && make \
     && make install \
     && automake --version
+
+# default openssl-devel package installs OpenSSL 1.0.x, we want 1.1.1 (from openssl11)
+RUN mkdir -p /usr/local/openssl/include && \
+    ln -s /usr/include/openssl11/openssl /usr/local/openssl/include/openssl && \
+    ln -s /usr/lib64/openssl11 /usr/local/openssl/lib && \
+    ln -s /usr/include/openssl11/openssl /usr/include/openssl
 
 COPY get-cmake.sh /get-cmake.sh
 RUN env OPENSSL_ROOT_DIR=/usr/local/openssl /get-cmake.sh build

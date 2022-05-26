@@ -4,6 +4,10 @@ set -eu
 
 VSN=${2:-"3.19.2"}
 
+if [ -d '/usr/local/openssl' ]; then
+    export OPENSSL_ROOT_DIR='/usr/local/openssl'
+    echo "OPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR"
+fi
 if [ "$1" = 'build' ]; then
     curl --silent --show-error -kfL -o cmake.tar.gz "https://github.com/Kitware/CMake/releases/download/v${VSN}/cmake-${VSN}.tar.gz"
     tar -zxf cmake.tar.gz

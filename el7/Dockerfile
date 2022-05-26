@@ -10,8 +10,6 @@ RUN yum install -y autoconf \
                    libatomic \
                    libtool \
                    ncurses-devel \
-                   openssl11 \
-                   openssl11-devel \
                    systemd \
                    unixODBC-devel \
                    unzip \
@@ -26,6 +24,9 @@ RUN yum groupinstall -y "Development Tools"
 RUN yum install -y centos-release-scl
 RUN yum install -y devtoolset-8-gcc devtoolset-8-gcc-c++
 
+ADD install-openssl11.sh /install-openssl11.sh
+RUN /install-openssl11.sh
+
 COPY get-git.sh /get-git.sh
 RUN /get-git.sh
 
@@ -39,12 +40,6 @@ RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automak
     && make \
     && make install \
     && automake --version
-
-# default openssl-devel package installs OpenSSL 1.0.x, we want 1.1.1 (from openssl11)
-RUN mkdir -p /usr/local/openssl/include && \
-    ln -s /usr/include/openssl11/openssl /usr/local/openssl/include/openssl && \
-    ln -s /usr/lib64/openssl11 /usr/local/openssl/lib && \
-    ln -s /usr/include/openssl11/openssl /usr/include/openssl
 
 COPY get-cmake.sh /get-cmake.sh
 RUN env OPENSSL_ROOT_DIR=/usr/local/openssl /get-cmake.sh build

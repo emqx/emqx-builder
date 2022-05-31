@@ -18,10 +18,10 @@ RUN apt-get update && apt-get install -y \
     git \
     jq \
     libffi-dev \
-    libkrb5 \
+    libkrb5-3 \
     libkrb5-dev \
     libncurses5-dev \
-    libsasl2 \
+    libsasl2-2 \
     libsasl2-dev \
     libsasl2-modules-gssapi-mit \
     libssl-dev \

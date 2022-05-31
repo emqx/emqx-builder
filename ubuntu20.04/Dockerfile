@@ -20,7 +20,12 @@ RUN apt-get update && apt-get install -y \
     git \
     jq \
     libffi-dev \
+    libkrb5 \
+    libkrb5-dev \
     libncurses5-dev \
+    libsasl2 \
+    libsasl2-dev \
+    libsasl2-modules-gssapi-mit \
     libssl-dev \
     libtool \
     make \
@@ -32,6 +37,13 @@ RUN apt-get update && apt-get install -y \
     wget \
     zip \
     zlib1g-dev
+
+# The following is not necessary for Kerberos authentication but makes testing
+# https://github.com/kafka4beam/sasl_auth easier
+RUN apt-get install -y \
+    krb5-kdc \
+    krb5-admin-server \
+    expect
 
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 RUN ln -sf /usr/bin/pip3 /usr/bin/pip

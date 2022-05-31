@@ -20,8 +20,6 @@ RUN yum install -y autoconf \
                    zlib-devel
 
 RUN yum install -y \
-    libsasl2 \
-    libsasl2-dev \
     krb5-workstation \
     cyrus-sasl-devel \
     cyrus-sasl \

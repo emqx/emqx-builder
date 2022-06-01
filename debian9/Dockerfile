@@ -1,6 +1,9 @@
 ARG BUILD_FROM=debian:9
 FROM ${BUILD_FROM}
 
+# Avoid getting asked questions during installation (tzdata)
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get install -y \
     autoconf \
     automake \

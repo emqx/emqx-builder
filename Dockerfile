@@ -7,10 +7,10 @@ RUN /get-otp.sh ${OTP_VERSION}
 
 RUN mkdir /tools
 
-ARG MQTT_BENCH_REF
-ENV MQTT_BENCH_REF=${MQTT_BENCH_REF:-0.3.3}
+ARG EMQTT_BENCH_REF
+ENV EMQTT_BENCH_REF=${EMQTT_BENCH_REF:-0.4.4}
 
-RUN git clone --depth=1 --branch=${MQTT_BENCH_REF} https://github.com/emqx/emqtt-bench.git /tools/emqtt-bench \
+RUN git clone --depth=1 --branch=${EMQTT_BENCH_REF} https://github.com/emqx/emqtt-bench.git /tools/emqtt-bench \
     && make -C /tools/emqtt-bench
 
 ENV PATH="/tools/emqtt-bench:$PATH"

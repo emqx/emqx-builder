@@ -2,13 +2,17 @@ ARG BUILD_FROM=ubuntu:20.04
 FROM ${BUILD_FROM}
 
 ARG OTP_VERSION
+
 COPY get-otp.sh /get-otp.sh
 RUN /get-otp.sh ${OTP_VERSION}
 
+ARG ELIXIR_VERSION
+
+COPY get-elixir.sh /get-elixir.sh
+RUN /get-elixir.sh ${ELIXIR_VERSION}
+
 RUN mkdir /tools
 
-# Only for emqx-builder/4.4
-ENV BUILD_WITHOUT_QUIC=1
 ARG EMQTT_BENCH_REF
 ENV EMQTT_BENCH_REF=${EMQTT_BENCH_REF:-0.4.4}
 

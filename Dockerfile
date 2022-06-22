@@ -7,6 +7,8 @@ RUN /get-otp.sh ${OTP_VERSION}
 
 RUN mkdir /tools
 
+# Only for emqx-builder/4.4
+ENV BUILD_WITHOUT_QUIC=1
 ARG EMQTT_BENCH_REF
 ENV EMQTT_BENCH_REF=${EMQTT_BENCH_REF:-0.4.4}
 

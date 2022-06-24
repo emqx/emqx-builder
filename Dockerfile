@@ -14,7 +14,7 @@ RUN /get-elixir.sh ${ELIXIR_VERSION}
 RUN mkdir /tools
 
 ARG EMQTT_BENCH_REF
-ENV EMQTT_BENCH_REF=${EMQTT_BENCH_REF:-0.4.4}
+ENV EMQTT_BENCH_REF=${EMQTT_BENCH_REF:-0.4.5-alpha.1}
 
 RUN git clone --depth=1 --branch=${EMQTT_BENCH_REF} https://github.com/emqx/emqtt-bench.git /tools/emqtt-bench \
     && make -C /tools/emqtt-bench

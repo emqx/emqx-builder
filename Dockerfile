@@ -1,6 +1,8 @@
 ARG BUILD_FROM=ubuntu:20.04
 FROM ${BUILD_FROM}
 
+ENV EMQX_BUILDER_IMAGE=${BUILD_FROM}
+
 ARG OTP_VERSION
 
 COPY get-otp.sh /get-otp.sh
@@ -14,10 +16,9 @@ RUN /get-elixir.sh ${ELIXIR_VERSION}
 RUN mkdir /tools
 
 ARG EMQTT_BENCH_REF
-ENV EMQTT_BENCH_REF=${EMQTT_BENCH_REF:-0.4.5-alpha.1}
 
-RUN git clone --depth=1 --branch=${EMQTT_BENCH_REF} https://github.com/emqx/emqtt-bench.git /tools/emqtt-bench \
-    && make -C /tools/emqtt-bench
+COPY get-emqtt-bench.sh /get-emqtt-bench.sh
+RUN /get-emqtt-bench.sh "${EMQTT_BENCH_REF:-0.4.5-alpha.1}"
 
 ENV PATH="/tools/emqtt-bench:$PATH"
 

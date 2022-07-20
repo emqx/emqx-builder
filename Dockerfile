@@ -10,7 +10,7 @@ RUN mkdir /tools
 # Only for emqx-builder/4.4
 ENV BUILD_WITHOUT_QUIC=1
 ARG EMQTT_BENCH_REF
-ENV EMQTT_BENCH_REF=${EMQTT_BENCH_REF:-0.4.4}
+ENV EMQTT_BENCH_REF=${EMQTT_BENCH_REF:-0.4.5}
 
 RUN git clone --depth=1 --branch=${EMQTT_BENCH_REF} https://github.com/emqx/emqtt-bench.git /tools/emqtt-bench \
     && make -C /tools/emqtt-bench

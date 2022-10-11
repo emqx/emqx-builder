@@ -5,6 +5,7 @@ NOTE: Must sync Dockerfile chages from main-4.4 branch!
 This repo holds the Dockerfile and build scripts to build
 docker images which are used to build EMQX.
 
+The `main-4.3` branch is for EMQX 4.3 series.
 The `main-4.4` branch is for EMQX 4.4 series.
 The `main` branch is for EMQX 5.0 series.
 

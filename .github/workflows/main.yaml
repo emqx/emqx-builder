@@ -22,12 +22,12 @@ jobs:
       id: otp
       run: |
         otp_version=$(grep -E "^\+\sOTP-.*" ./RELEASE.md | sed 's/\+\sOTP-//g' | jq -R -s -c 'split("\n")[:-1]')
-        echo "::set-output name=version::$otp_version"
+        echo "version=$otp_version" >> $GITHUB_OUTPUT
     - name: get elixir_version
       id: elixir
       run: |
         elixir_version=$(grep -E "^\+\sElixir-.*" ./RELEASE.md | sed 's/\+\sElixir-//g' | jq -R -s -c 'split("\n")[:-1]')
-        echo "::set-output name=version::$elixir_version"
+        echo "version=$elixir_version" >> $GITHUB_OUTPUT
 
   base:
     runs-on: ubuntu-latest
@@ -37,20 +37,21 @@ jobs:
         emqx_minor:
           - "5.0"
         platform:
-          - [ubuntu20.04, "linux/amd64,linux/arm64"]
-          - [ubuntu18.04, "linux/amd64,linux/arm64"]
-          - [ubuntu16.04, "linux/amd64,linux/arm64"]
-          - [debian11   , "linux/amd64,linux/arm64"]
-          - [debian10   , "linux/amd64,linux/arm64"]
-          - [debian9    , "linux/amd64,linux/arm64"]
-          - [el8        , "linux/amd64,linux/arm64"]
-          - [el7        , "linux/amd64,linux/arm64"]
-          - [raspbian10 , "linux/arm64"]
-          - [raspbian9  , "linux/arm64"]
+          - [ubuntu20.04 , "linux/amd64,linux/arm64"]
+          - [ubuntu18.04 , "linux/amd64,linux/arm64"]
+          - [ubuntu16.04 , "linux/amd64,linux/arm64"]
+          - [debian11    , "linux/amd64,linux/arm64"]
+          - [debian10    , "linux/amd64,linux/arm64"]
+          - [debian9     , "linux/amd64,linux/arm64"]
+          - [el8         , "linux/amd64,linux/arm64"]
+          - [el7         , "linux/amd64,linux/arm64"]
+          - [al2         , "linux/amd64,linux/arm64"]
+          - [raspbian10  , "linux/arm64"]
+          - [raspbian9   , "linux/arm64"]
           - [alpine3.15.1, "linux/amd64,linux/arm64"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -58,12 +59,12 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Get cache
         run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }} /tmp/.docker-buildx-cache
-      - uses: docker/setup-buildx-action@v1
-      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v2
+      - uses: docker/setup-qemu-action@v2
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
-      - uses: docker/login-action@v1
+      - uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -74,7 +75,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}/base-${{ matrix.emqx_minor }}
           tags: type=raw,value=${{ matrix.platform[0] }}
       - name: Build base image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           push: true
           pull: true
@@ -102,29 +103,30 @@ jobs:
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
         elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:
-          - [ubuntu20.04, "linux/amd64,linux/arm64"]
-          - [ubuntu18.04, "linux/amd64,linux/arm64"]
-          - [ubuntu16.04, "linux/amd64,linux/arm64"]
-          - [debian11   , "linux/amd64,linux/arm64"]
-          - [debian10   , "linux/amd64,linux/arm64"]
-          - [debian9    , "linux/amd64,linux/arm64"]
-          - [el8        , "linux/amd64,linux/arm64"]
-          - [el7        , "linux/amd64,linux/arm64"]
-          - [raspbian10 , "linux/arm64"]
-          - [raspbian9  , "linux/arm64"]
+          - [ubuntu20.04 , "linux/amd64,linux/arm64"]
+          - [ubuntu18.04 , "linux/amd64,linux/arm64"]
+          - [ubuntu16.04 , "linux/amd64,linux/arm64"]
+          - [debian11    , "linux/amd64,linux/arm64"]
+          - [debian10    , "linux/amd64,linux/arm64"]
+          - [debian9     , "linux/amd64,linux/arm64"]
+          - [el8         , "linux/amd64,linux/arm64"]
+          - [el7         , "linux/amd64,linux/arm64"]
+          - [al2         , "linux/amd64,linux/arm64"]
+          - [raspbian10  , "linux/arm64"]
+          - [raspbian9   , "linux/arm64"]
           - [alpine3.15.1, "linux/amd64,linux/arm64"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Get ref
       id: ref
-      run: echo "::set-output name=ref::${GITHUB_REF##*/}"
-    - uses: docker/setup-buildx-action@v1
-    - uses: docker/setup-qemu-action@v1
+      run: echo "ref=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+    - uses: docker/setup-buildx-action@v2
+    - uses: docker/setup-qemu-action@v2
       with:
         image: tonistiigi/binfmt:latest
         platforms: all
-    - uses: docker/login-action@v1
+    - uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
@@ -135,7 +137,7 @@ jobs:
         images: ghcr.io/${{ github.repository }}/${{ steps.ref.outputs.ref }}
         tags: |
           type=raw,value=${{ matrix.elixir }}-${{ matrix.otp }}-${{ matrix.platform[0] }}
-    - uses: docker/build-push-action@v2
+    - uses: docker/build-push-action@v3
       with:
         push: true
         pull: true
@@ -157,7 +159,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1

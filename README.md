@@ -33,3 +33,10 @@ ghcr.io/emqx/emqx-builder/<BUILDER_GIT_TAG>:24.1.5-1-ubuntu20.04
 
 Where `BUILDER_GIT_TAG` is of scheme `4.4-1` for images to build EMQX 4.4
 and `5.0-1`, `5.0-2` for images to build EMQX 5.0
+
+Notice that we do **not** track the _patch_ version of EMQX in our
+image scheme: we have one base image for each minor release that can
+be shared on a non one-to-one basis with several EMQX patch releases.
+
+For example: EMQX `5.0.0` and `5.0.3` may share the same
+`emqx-builder/5.0-2` image.

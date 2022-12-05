@@ -7,6 +7,7 @@ concurrency:
 ## Update the base image every day
 on:
   workflow_dispatch:
+  pull_request:
   schedule:
   ## In UTC
   - cron: '0 0 * * *'
@@ -22,20 +23,21 @@ jobs:
         emqx_minor:
           - 4.4
         platform:
-          - [ubuntu20.04, "linux/amd64,linux/arm64"]
-          - [ubuntu18.04, "linux/amd64,linux/arm64"]
-          - [ubuntu16.04, "linux/amd64,linux/arm64"]
-          - [debian11   , "linux/amd64,linux/arm64"]
-          - [debian10   , "linux/amd64,linux/arm64"]
-          - [debian9    , "linux/amd64,linux/arm64"]
-          - [el8        , "linux/amd64,linux/arm64"]
-          - [el7        , "linux/amd64,linux/arm64"]
-          - [raspbian10 , "linux/arm64"]
-          - [raspbian9  , "linux/arm64"]
+          - [ubuntu20.04 , "linux/amd64,linux/arm64"]
+          - [ubuntu18.04 , "linux/amd64,linux/arm64"]
+          - [ubuntu16.04 , "linux/amd64,linux/arm64"]
+          - [debian11    , "linux/amd64,linux/arm64"]
+          - [debian10    , "linux/amd64,linux/arm64"]
+          - [debian9     , "linux/amd64,linux/arm64"]
+          - [el8         , "linux/amd64,linux/arm64"]
+          - [el7         , "linux/amd64,linux/arm64"]
+          - [al2         , "linux/amd64,linux/arm64"]
+          - [raspbian10  , "linux/arm64"]
+          - [raspbian9   , "linux/arm64"]
           - [alpine3.15.1, "linux/amd64,linux/arm64"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -43,12 +45,12 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Get cache
         run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }} /tmp/.docker-buildx-cache
-      - uses: docker/setup-buildx-action@v1
-      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v2
+      - uses: docker/setup-qemu-action@v2
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
-      - uses: docker/login-action@v1
+      - uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -59,9 +61,9 @@ jobs:
           images: ghcr.io/${{ github.repository }}/base-${{ matrix.emqx_minor }}
           tags: type=raw,value=${{ matrix.platform[0] }}
       - name: Build base image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
-          push: true
+          push: ${{ github.event_name != 'pull_request'}}
           pull: true
           cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
           cache-to: type=local,dest=/tmp/.docker-buildx-cache-new,mode=max
@@ -70,9 +72,5 @@ jobs:
           labels: ${{ steps.base_meta.outputs.labels }}
           file: ${{ matrix.platform[0] }}/Dockerfile
           context: .
-      - name: Update cache
-        run: |
-          rm -rf /tmp/.docker-buildx-cache
-          mv /tmp/.docker-buildx-cache-new /tmp/.docker-buildx-cache
       - name: Update cache
         run: aws s3 sync --delete /tmp/.docker-buildx-cache-new s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }}

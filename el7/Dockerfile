@@ -40,10 +40,19 @@ RUN yum install -y devtoolset-8-gcc devtoolset-8-gcc-c++
 ADD install-openssl11.sh /install-openssl11.sh
 RUN /install-openssl11.sh
 
-COPY get-git.sh /get-git.sh
-RUN /get-git.sh
-
 WORKDIR /
+
+ENV GIT_VERSION=2.38.1 DEVELOPER_CFLAGS='-std=gnu99'
+RUN curl -L -o /tmp/git.tar.gz "https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz" \
+    && tar zxf /tmp/git.tar.gz -C /tmp \
+    && cd "/tmp/git-${GIT_VERSION}/" \
+    && make configure \
+    && ./configure --prefix=/usr \
+    && make all \
+    && make install \
+    && cd / \
+    && rm -rf /tmp/git.tar.gz "/tmp/git-${GIT_VERSION}/" \
+    && git --version
 
 RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
     && tar -zxvf /tmp/automake-1.14.tar.gz -C /tmp \

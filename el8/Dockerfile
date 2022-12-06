@@ -40,20 +40,19 @@ RUN yum install -y \
 
 RUN yum groupinstall -y "Development Tools"
 
-RUN yum install -y python3
-
-## we do not want python2 anymore
-RUN ln -sf /usr/bin/python3 /usr/bin/python
-RUN ln -sf /usr/bin/pip3 /usr/bin/pip
-
 WORKDIR /
 
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
+RUN alternatives --set python /usr/bin/python3 && \
+    alternatives --install /usr/bin/pip pip /usr/bin/pip3 2 && \
+    alternatives --set pip /usr/bin/pip3
+
 # cleanup
-RUN yum clean packages \
- && rm -rf /tmp/* /var/tmp/*
+RUN yum clean packages && \
+    rm -rf /tmp/* && \
+    rm -rf /var/tmp/*
 
 # Elixir complains if runs without UTF-8
 ENV LC_ALL=C.UTF-8

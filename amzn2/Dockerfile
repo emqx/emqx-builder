@@ -37,19 +37,23 @@ RUN yum install -y \
 
 RUN yum groupinstall -y "Development Tools"
 
-# cleanup
-RUN yum clean packages && \
-    rm -rf /tmp/* && \
-    rm -rf /var/tmp/*
-
 WORKDIR /
 
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
-# make python3 the default as the last step to not break yum
 RUN alternatives --install /usr/bin/python python /usr/bin/python2 1 && \
-    alternatives --install /usr/bin/python python /usr/bin/python3 2
+    alternatives --install /usr/bin/python python /usr/bin/python3 2 && \
+    alternatives --set python /usr/bin/python3 && \
+    alternatives --install /usr/bin/pip pip /usr/bin/pip2 1 && \
+    alternatives --install /usr/bin/pip pip /usr/bin/pip3 2 && \
+    alternatives --set pip /usr/bin/pip3 && \
+    sed 's/python/python2/g' -i /usr/bin/yum
+
+# cleanup
+RUN yum clean packages && \
+    rm -rf /tmp/* && \
+    rm -rf /var/tmp/*
 
 # Elixir complains if runs without UTF-8
 ENV LC_ALL=C.UTF-8

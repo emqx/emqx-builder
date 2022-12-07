@@ -10,6 +10,8 @@ RUN yum install -y autoconf \
                    libatomic \
                    libtool \
                    ncurses-devel \
+                   python3 \
+                   python3-pip \
                    systemd \
                    unixODBC-devel \
                    unzip \
@@ -40,10 +42,19 @@ RUN yum install -y devtoolset-8-gcc devtoolset-8-gcc-c++
 ADD install-openssl11.sh /install-openssl11.sh
 RUN /install-openssl11.sh
 
-COPY get-git.sh /get-git.sh
-RUN /get-git.sh
-
 WORKDIR /
+
+ENV GIT_VERSION=2.38.1 DEVELOPER_CFLAGS='-std=gnu99'
+RUN curl -L -o /tmp/git.tar.gz "https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz" \
+    && tar zxf /tmp/git.tar.gz -C /tmp \
+    && cd "/tmp/git-${GIT_VERSION}/" \
+    && make configure \
+    && ./configure --prefix=/usr \
+    && make all \
+    && make install \
+    && cd / \
+    && rm -rf /tmp/git.tar.gz "/tmp/git-${GIT_VERSION}/" \
+    && git --version
 
 RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
     && tar -zxvf /tmp/automake-1.14.tar.gz -C /tmp \
@@ -64,17 +75,18 @@ RUN env OPENSSL_ROOT_DIR=/usr/local/openssl /get-cmake.sh build
 RUN sed -i -e '/override_install_langs/d' /etc/yum.conf && \
     yum -q -y reinstall glibc-common
 
-RUN yum install -y python3
-## we do not want python2 anymore
-RUN ln -sf /usr/bin/python3 /usr/bin/python
-RUN ln -sf /usr/bin/pip3 /usr/bin/pip
-
-## yum needs python2
-RUN sed 's/python/python2/g' -i /usr/bin/yum
+RUN alternatives --install /usr/bin/python python /usr/bin/python2 1 && \
+    alternatives --install /usr/bin/python python /usr/bin/python3 2 && \
+    alternatives --set python /usr/bin/python3 && \
+    alternatives --install /usr/bin/pip pip /usr/bin/pip2 1 && \
+    alternatives --install /usr/bin/pip pip /usr/bin/pip3 2 && \
+    alternatives --set pip /usr/bin/pip3 && \
+    sed 's/python/python2/g' -i /usr/bin/yum
 
 # cleanup
-RUN yum clean packages \
-    && rm -rf /tmp/* /var/tmp/*
+RUN yum clean packages && \
+    rm -rf /tmp/* && \
+    rm -rf /var/tmp/*
 
 ENV BASH_ENV=/opt/rh/devtoolset-8/enable \
     ENV=/opt/rh/devtoolset-8/enable \

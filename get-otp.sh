@@ -55,6 +55,9 @@ case "${OTP_VERSION}" in
     25*)
         REBAR3_VERSION="${REBAR3_VERSION:-3.19.0-emqx-1}"
         ;;
+    24*)
+        REBAR3_VERSION="${REBAR3_VERSION:-3.18.0-emqx-1}"
+        ;;
     2*)
         REBAR3_VERSION="${REBAR3_VERSION:-3.14.3-emqx-4}"
         ;;

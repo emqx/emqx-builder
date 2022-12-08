@@ -69,7 +69,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - uses: docker/metadata-action@v3
+      - uses: docker/metadata-action@v4
         id: base_meta
         with:
           images: ghcr.io/${{ github.repository }}/base-${{ matrix.emqx_minor }}
@@ -131,7 +131,7 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ github.token }}
-    - uses: docker/metadata-action@v3
+    - uses: docker/metadata-action@v4
       id: meta
       with:
         images: ghcr.io/${{ github.repository }}/${{ steps.ref.outputs.ref }}

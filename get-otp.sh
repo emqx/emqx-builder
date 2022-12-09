@@ -35,22 +35,21 @@ if [ -d /usr/local/openssl ]; then
 else
     extra_config=""
 fi
-./configure --disable-hipe ${extra_config}
-
 case "$(uname -m):${OTP_VERSION}" in
     aarch64:25*)
         # NOTE
         # Since OTP-25.0 JIT flavoured VM is compiled by default on ARM64, but
         # the resulting binary segfaults consistently. Disable JIT builds on
         # ARM64 as a workaround while investigating the root cause.
-        make_flags="FLAVOR=emu"
+        extra_config="${extra_config} --disable-jit"
         ;;
     *)
-        make_flags=""
         ;;
 esac
-make -j $(nproc) ${make_flags}
-make ${make_flags} install
+./configure --disable-hipe ${extra_config}
+
+make -j $(nproc)
+make install
 
 # cleanup
 cd "$ROOT"

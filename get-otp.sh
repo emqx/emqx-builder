@@ -35,7 +35,19 @@ if [ -d /usr/local/openssl ]; then
 else
     extra_config=""
 fi
+case "$(uname -m):${OTP_VERSION}" in
+    aarch64:25*)
+        # NOTE
+        # Since OTP-25.0 JIT flavoured VM is compiled by default on ARM64, but
+        # the resulting binary segfaults consistently. Disable JIT builds on
+        # ARM64 as a workaround while investigating the root cause.
+        extra_config="${extra_config} --disable-jit"
+        ;;
+    *)
+        ;;
+esac
 ./configure --disable-hipe ${extra_config}
+
 make -j $(nproc)
 make install
 

@@ -45,7 +45,14 @@ RUN /install-openssl11.sh
 WORKDIR /
 
 ENV GIT_VERSION=2.38.1 DEVELOPER_CFLAGS='-std=gnu99'
-RUN curl -L -o /tmp/git.tar.gz "https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz" \
+# - have to uninstall stock git to cleanup all git backend files,
+#   otherwise git from the newer version may encounter
+#   an error like "bogus format in GIT_CONFIG_PARAMETERS"
+# - gnu99 flag is to address https://gitlab.com/gitlab-org/omnibus-gitlab/-/merge_requests/5948
+# - libcurl-devel is needed to support clone from https remotes
+RUN yum remove -y git \
+    && yum install -y libcurl-devel \
+    && curl -L -o /tmp/git.tar.gz "https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz" \
     && tar zxf /tmp/git.tar.gz -C /tmp \
     && cd "/tmp/git-${GIT_VERSION}/" \
     && make configure \

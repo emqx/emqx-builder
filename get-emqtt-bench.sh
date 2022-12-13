@@ -26,5 +26,9 @@ case "$SYSTEM" in
         ;;
 esac
 
-git clone --depth=1 --branch="${VSN}" https://github.com/emqx/emqtt-bench.git /tools/emqtt-bench
-make REBAR=/usr/local/bin/rebar3 -C /tools/emqtt-bench
+git clone --depth=1 --branch="${VSN}" https://github.com/emqx/emqtt-bench.git /emqtt-bench
+make REBAR=/usr/local/bin/rebar3 -C /emqtt-bench
+cp -v /emqtt-bench/emqtt_bench /emqtt-bench/*.so /usr/local/bin/
+
+# cleanup
+rm -rf /emqtt-bench

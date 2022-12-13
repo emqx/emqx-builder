@@ -17,7 +17,7 @@ jobs:
       otp: ${{ steps.otp.outputs.version }}
       elixir: ${{ steps.elixir.outputs.version }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: get otp_version
       id: otp
       run: |
@@ -61,9 +61,6 @@ jobs:
         run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }} /tmp/.docker-buildx-cache
       - uses: docker/setup-buildx-action@v2
       - uses: docker/setup-qemu-action@v2
-        with:
-          image: tonistiigi/binfmt:latest
-          platforms: all
       - uses: docker/login-action@v2
         with:
           registry: ghcr.io
@@ -123,9 +120,6 @@ jobs:
       run: echo "ref=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
     - uses: docker/setup-buildx-action@v2
     - uses: docker/setup-qemu-action@v2
-      with:
-        image: tonistiigi/binfmt:latest
-        platforms: all
     - uses: docker/login-action@v2
       with:
         registry: ghcr.io

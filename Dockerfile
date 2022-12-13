@@ -20,8 +20,6 @@ ARG EMQTT_BENCH_REF
 COPY get-emqtt-bench.sh /get-emqtt-bench.sh
 RUN /get-emqtt-bench.sh "${EMQTT_BENCH_REF:-0.4.7}"
 
-ENV PATH="/tools/emqtt-bench:$PATH"
-
 ARG LUX_REF
 ENV LUX_REF=${LUX_REF:-lux-2.6}
 

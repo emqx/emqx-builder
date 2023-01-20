@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ubuntu:20.04
+ARG BUILD_FROM=ubuntu:22.04
 FROM ${BUILD_FROM}
 
 ENV DEBIAN_FRONTEND=noninteractive

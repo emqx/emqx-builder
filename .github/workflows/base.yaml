@@ -60,7 +60,6 @@ jobs:
       - name: Build base image
         uses: docker/build-push-action@v3
         with:
-          push: ${{ github.event_name != 'pull_request'}}
           pull: true
           cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
           cache-to: type=local,dest=/tmp/.docker-buildx-cache-new,mode=max

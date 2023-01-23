@@ -1,0 +1,73 @@
+name: Build docker images
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      otp: ${{ steps.otp.outputs.version }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: get otp_version
+      id: otp
+      run: |
+        otp_version=$(grep -E "^\+\sOTP-.*" ./RELEASE.md | sed 's/\+\sOTP-//g' | jq -R -s -c 'split("\n")[:-1]')
+        echo "version=$otp_version" >> $GITHUB_OUTPUT
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+
+    strategy:
+      matrix:
+        emqx_minor:
+          - "4.4"
+        otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
+        platform:
+          - [ubuntu22.04 , "linux/amd64,linux/arm64"]
+          - [ubuntu20.04 , "linux/amd64,linux/arm64"]
+          - [ubuntu18.04 , "linux/amd64,linux/arm64"]
+          - [ubuntu16.04 , "linux/amd64,linux/arm64"]
+          - [debian11    , "linux/amd64,linux/arm64"]
+          - [debian10    , "linux/amd64,linux/arm64"]
+          - [debian9     , "linux/amd64,linux/arm64"]
+          - [el8         , "linux/amd64,linux/arm64"]
+          - [el7         , "linux/amd64,linux/arm64"]
+          - [amzn2       , "linux/amd64,linux/arm64"]
+          - [alpine3.15.1, "linux/amd64,linux/arm64"]
+
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: docker/setup-qemu-action@v2
+    - uses: docker/setup-buildx-action@v2
+      with:
+        driver-opts: network=host
+    - name: Build base image
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        platforms: ${{ matrix.platform[1] }}
+        tags: localhost:5000/${{ github.repository }}/base-${{ matrix.emqx_minor }}:${{ matrix.platform[0] }}
+        file: ${{ matrix.platform[0] }}/Dockerfile
+        context: .
+    - uses: docker/build-push-action@v3
+      with:
+        platforms: ${{ matrix.platform[1] }}
+        build-args: |
+          BUILD_FROM=localhost:5000/${{ github.repository }}/base-${{ matrix.emqx_minor }}:${{ matrix.platform[0] }}
+          OTP_VERSION=${{ matrix.otp }}
+        file: ./Dockerfile
+        context: .

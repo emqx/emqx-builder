@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     g++ \
     gcc \
     git \
+    inotify-tools \
     jq \
     libffi-dev \
     libkrb5-3 \

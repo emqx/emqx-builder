@@ -7,7 +7,6 @@ concurrency:
 ## Update the base image every day
 on:
   workflow_dispatch:
-  pull_request:
   schedule:
   ## In UTC
   - cron: '0 0 * * *'

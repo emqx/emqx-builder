@@ -51,7 +51,7 @@ erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "relea
 # Get rebar3
 #########################
 
-REBAR3_VERSION="${REBAR3_VERSION:-3.14.3-emqx-4}"
+REBAR3_VERSION="${REBAR3_VERSION:-3.18.0-emqx-1}"
 
 cd /usr/local/bin
 DOWNLOAD_URL='https://github.com/emqx/rebar3/releases/download'

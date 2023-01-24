@@ -38,6 +38,7 @@ jobs:
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
         elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:
+          - [ubuntu22.04 , "linux/amd64,linux/arm64"]
           - [ubuntu20.04 , "linux/amd64,linux/arm64"]
           - [ubuntu18.04 , "linux/amd64,linux/arm64"]
           - [ubuntu16.04 , "linux/amd64,linux/arm64"]
@@ -54,22 +55,31 @@ jobs:
           # - [raspbian9   , "linux/arm64"]
           - [alpine3.15.1, "linux/amd64,linux/arm64"]
 
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+
     steps:
     - uses: actions/checkout@v3
-    - uses: docker/setup-buildx-action@v2
     - uses: docker/setup-qemu-action@v2
-    - uses: docker/login-action@v2
+    - uses: docker/setup-buildx-action@v2
       with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ github.token }}
+        driver-opts: network=host
+    - name: Build base image
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        platforms: ${{ matrix.platform[1] }}
+        tags: localhost:5000/${{ github.repository }}/base-${{ matrix.emqx_minor }}:${{ matrix.platform[0] }}
+        file: ${{ matrix.platform[0] }}/Dockerfile
+        context: .
     - uses: docker/build-push-action@v3
       with:
-        push: false
-        pull: true
         platforms: ${{ matrix.platform[1] }}
         build-args: |
-          BUILD_FROM=ghcr.io/${{ github.repository }}/base-${{ matrix.emqx_minor }}:${{ matrix.platform[0] }}
+          BUILD_FROM=localhost:5000/${{ github.repository }}/base-${{ matrix.emqx_minor }}:${{ matrix.platform[0] }}
           OTP_VERSION=${{ matrix.otp }}
           ELIXIR_VERSION=${{ matrix.elixir }}
         file: ./Dockerfile

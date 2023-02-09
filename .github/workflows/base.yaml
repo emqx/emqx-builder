@@ -22,20 +22,7 @@ jobs:
         emqx_minor:
           - "5.0"
         platform:
-          - [ubuntu22.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu20.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu18.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu16.04 , "linux/amd64,linux/arm64"]
-          - [debian11    , "linux/amd64,linux/arm64"]
-          - [debian10    , "linux/amd64,linux/arm64"]
-          - [debian9     , "linux/amd64,linux/arm64"]
           - [el9         , "linux/amd64,linux/arm64"]
-          - [el8         , "linux/amd64,linux/arm64"]
-          - [el7         , "linux/amd64,linux/arm64"]
-          - [amzn2       , "linux/amd64,linux/arm64"]
-          - [raspbian10  , "linux/arm64"]
-          - [raspbian9   , "linux/arm64"]
-          - [alpine3.15.1, "linux/amd64,linux/arm64"]
 
     steps:
       - uses: actions/checkout@v3

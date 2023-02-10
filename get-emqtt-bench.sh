@@ -13,12 +13,15 @@ else
 fi
 SYSTEM="$(echo "${DIST}${VERSION_ID}" | sed -r 's/([a-zA-Z]*)-.*/\1/g')"
 
-# no quic on raspbian9 and centos7
+# no quic on raspbian9, rockylinux 7,9
 case "$SYSTEM" in
     *raspbian9*)
         export BUILD_WITHOUT_QUIC=1
         ;;
     *el7*)
+        export BUILD_WITHOUT_QUIC=1
+        ;;
+    *el9*)
         export BUILD_WITHOUT_QUIC=1
         ;;
     *)

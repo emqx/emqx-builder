@@ -8,6 +8,7 @@ RUN yum install -y autoconf \
                    flex-devel \
                    jq \
                    libatomic \
+                   libstdc++ \
                    libtool \
                    ncurses-devel \
                    python3 \

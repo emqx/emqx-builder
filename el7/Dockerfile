@@ -34,33 +34,24 @@ RUN yum install -y \
     krb5-server \
     expect
 
-RUN yum groupinstall -y "Development Tools"
+RUN yum groupinstall -y "Development Tools" \
+    && yum install -y centos-release-scl \
+    && yum install -y devtoolset-8-gcc devtoolset-8-gcc-c++
 
-RUN yum install -y centos-release-scl
-RUN yum install -y devtoolset-8-gcc devtoolset-8-gcc-c++
-
-ADD install-openssl11.sh /install-openssl11.sh
-RUN /install-openssl11.sh
+ADD *.sh /
 
 WORKDIR /
 
-ENV GIT_VERSION=2.38.1 DEVELOPER_CFLAGS='-std=gnu99'
+RUN /install-openssl11.sh
+
 # - have to uninstall stock git to cleanup all git backend files,
 #   otherwise git from the newer version may encounter
 #   an error like "bogus format in GIT_CONFIG_PARAMETERS"
 # - gnu99 flag is to address https://gitlab.com/gitlab-org/omnibus-gitlab/-/merge_requests/5948
 # - libcurl-devel is needed to support clone from https remotes
-RUN yum remove -y git \
+RUN yum remove -y git* \
     && yum install -y libcurl-devel \
-    && curl -L -o /tmp/git.tar.gz "https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz" \
-    && tar zxf /tmp/git.tar.gz -C /tmp \
-    && cd "/tmp/git-${GIT_VERSION}/" \
-    && make configure \
-    && ./configure --prefix=/usr \
-    && make all \
-    && make install \
-    && cd / \
-    && rm -rf /tmp/git.tar.gz "/tmp/git-${GIT_VERSION}/" \
+    && env DEVELOPER_CFLAGS='-std=gnu99' /get-git.sh \
     && git --version
 
 RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
@@ -72,7 +63,6 @@ RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automak
     && make install \
     && automake --version
 
-COPY get-cmake.sh /get-cmake.sh
 RUN env OPENSSL_ROOT_DIR=/usr/local/openssl /get-cmake.sh build
 
 # We have to reinstall `glibc-common` after removing the override just

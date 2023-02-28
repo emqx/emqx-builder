@@ -54,14 +54,7 @@ RUN yum remove -y git* \
     && env DEVELOPER_CFLAGS='-std=gnu99' /get-git.sh \
     && git --version
 
-RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
-    && tar -zxvf /tmp/automake-1.14.tar.gz -C /tmp \
-    && cd /tmp/automake-1.14 \
-    && ./bootstrap.sh \
-    && ./configure \
-    && make \
-    && make install \
-    && automake --version
+RUN /get-automake.sh
 
 RUN env OPENSSL_ROOT_DIR=/usr/local/openssl /get-cmake.sh build
 

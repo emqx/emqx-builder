@@ -1,16 +1,12 @@
 ARG BUILD_FROM=amazonlinux:2
 FROM ${BUILD_FROM}
 
-RUN yum update -y && yum install -y \
-    autoconf \
-    automake \
-    bison \
+RUN yum update -y
+
+RUN yum groupinstall -y "Development Tools" && yum install -y \
     curl \
-    flex \
     git \
     jq \
-    libatomic \
-    libtool \
     ncurses-devel \
     openssl \
     openssl-devel \
@@ -19,11 +15,9 @@ RUN yum update -y && yum install -y \
     systemd \
     unixODBC \
     unixODBC-devel \
-    unzip \
     vim \
     wget \
     which \
-    zip \
     krb5-workstation \
     cyrus-sasl-devel \
     cyrus-sasl \
@@ -35,11 +29,12 @@ RUN yum install -y \
     krb5-server \
     expect
 
-RUN yum groupinstall -y "Development Tools"
+ADD get-cmake.sh get-automake.sh  /
 
 WORKDIR /
 
-COPY get-cmake.sh /get-cmake.sh
+RUN yum remove -y automake && /get-automake.sh
+
 RUN /get-cmake.sh build
 
 RUN alternatives --install /usr/bin/python python /usr/bin/python2 1 && \
@@ -53,7 +48,8 @@ RUN alternatives --install /usr/bin/python python /usr/bin/python2 1 && \
 # cleanup
 RUN yum clean packages && \
     rm -rf /tmp/* && \
-    rm -rf /var/tmp/*
+    rm -rf /var/tmp/* && \
+    rm /get-cmake.sh /get-automake.sh
 
 # Elixir complains if runs without UTF-8
 ENV LC_ALL=C.UTF-8

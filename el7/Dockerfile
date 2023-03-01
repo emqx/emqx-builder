@@ -38,7 +38,7 @@ RUN yum groupinstall -y "Development Tools" \
     && yum install -y centos-release-scl \
     && yum install -y devtoolset-8-gcc devtoolset-8-gcc-c++
 
-ADD *.sh /
+ADD install-openssl11.sh get-git.sh get-automake.sh get-cmake.sh /
 
 WORKDIR /
 
@@ -76,7 +76,8 @@ RUN alternatives --install /usr/bin/python python /usr/bin/python2 1 && \
 # cleanup
 RUN yum clean packages && \
     rm -rf /tmp/* && \
-    rm -rf /var/tmp/*
+    rm -rf /var/tmp/* && \
+    rm /install-openssl11.sh /get-git.sh /get-automake.sh /get-cmake.sh
 
 ENV BASH_ENV=/opt/rh/devtoolset-8/enable \
     ENV=/opt/rh/devtoolset-8/enable \

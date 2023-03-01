@@ -43,7 +43,7 @@ RUN apt-get install -y \
     krb5-admin-server \
     expect
 
-ADD *.sh /
+ADD get-git.sh get-cmake.sh /
 
 WORKDIR /
 
@@ -73,7 +73,8 @@ RUN /get-cmake.sh build
 
 # cleanup
 RUN apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && rm /get-git.sh /get-cmake.sh
 
 # Elixir complains if runs without UTF-8
 ENV LC_ALL=C.UTF-8

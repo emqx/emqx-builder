@@ -29,7 +29,7 @@ RUN yum install -y \
     krb5-server \
     expect
 
-ADD *.sh /
+ADD get-cmake.sh get-automake.sh  /
 
 WORKDIR /
 
@@ -48,7 +48,8 @@ RUN alternatives --install /usr/bin/python python /usr/bin/python2 1 && \
 # cleanup
 RUN yum clean packages && \
     rm -rf /tmp/* && \
-    rm -rf /var/tmp/*
+    rm -rf /var/tmp/* && \
+    rm /get-cmake.sh /get-automake.sh
 
 # Elixir complains if runs without UTF-8
 ENV LC_ALL=C.UTF-8

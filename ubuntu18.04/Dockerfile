@@ -50,6 +50,15 @@ ADD get-git.sh get-cmake.sh /
 
 WORKDIR /
 
+# We need git >= 2.18 otherwise actions/checkout@v3 in github
+# workflows will use REST API to download source code archive without
+# .git directory instead of normal git clone. And if release is
+# configured to take it's version from git tag, rebar3 will not be
+# able to resolve the version correctly and will fallback to 0.0.0,
+# like it happened with emqtt-bench.
+# The error from actions/checkout@v3 is as follows:
+# > The repository will be downloaded using the GitHub REST API
+# > To create a local Git repository instead, add Git 2.18 or higher to the PATH
 RUN apt-get install -y libcurl4-openssl-dev \
     && /get-git.sh \
     && git --version

@@ -46,9 +46,13 @@ RUN apt-get install -y \
     krb5-admin-server \
     expect
 
-ADD get-cmake.sh /
+ADD get-git.sh get-cmake.sh /
 
 WORKDIR /
+
+RUN apt-get install -y libcurl4-openssl-dev \
+    && /get-git.sh \
+    && git --version
 
 RUN wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz \
     && tar xvf Python-3.7.4.tgz \
@@ -74,7 +78,7 @@ RUN /get-cmake.sh build
 # cleanup
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && rm /get-cmake.sh
+    && rm /get-git.sh /get-cmake.sh
 
 # Elixir complains if runs without UTF-8
 ENV LC_ALL=C.UTF-8

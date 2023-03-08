@@ -46,9 +46,22 @@ RUN apt-get install -y \
     krb5-admin-server \
     expect
 
-ADD get-cmake.sh /
+ADD get-git.sh get-cmake.sh /
 
 WORKDIR /
+
+# We need git >= 2.18 otherwise actions/checkout@v3 in github
+# workflows will use REST API to download source code archive without
+# .git directory instead of normal git clone. And if release is
+# configured to take it's version from git tag, rebar3 will not be
+# able to resolve the version correctly and will fallback to 0.0.0,
+# like it happened with emqtt-bench.
+# The error from actions/checkout@v3 is as follows:
+# > The repository will be downloaded using the GitHub REST API
+# > To create a local Git repository instead, add Git 2.18 or higher to the PATH
+RUN apt-get install -y libcurl4-openssl-dev \
+    && /get-git.sh \
+    && git --version
 
 RUN wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz \
     && tar xvf Python-3.7.4.tgz \
@@ -74,7 +87,7 @@ RUN /get-cmake.sh build
 # cleanup
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && rm /get-cmake.sh
+    && rm /get-git.sh /get-cmake.sh
 
 # Elixir complains if runs without UTF-8
 ENV LC_ALL=C.UTF-8

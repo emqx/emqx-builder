@@ -17,6 +17,7 @@ RUN dnf -y install \
 
 RUN dnf -y install \
     krb5-workstation \
+    krb5-devel \
     cyrus-sasl-devel \
     cyrus-sasl \
     cyrus-sasl-gssapi

@@ -9,8 +9,8 @@ RUN dnf -y install \
     openssl-devel \
     perl-FindBin \
     python3-pip \
+    procps-ng \
     systemd \
-    unixODBC \
     vim \
     wget \
     which
@@ -34,6 +34,14 @@ WORKDIR /
 
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
+
+RUN wget ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-2.3.11.tar.gz && \
+    tar xzf unixODBC-2.3.11.tar.gz && \
+    cd unixODBC-2.3.11 && \
+    ./configure && make && make install && \
+    cd .. && \
+    rm -rf unixODBC-2.3.11 && \
+    rm -f unixODBC-2.3.11.tar.gz
 
 # cleanup
 RUN dnf clean all && \

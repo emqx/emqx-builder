@@ -8,8 +8,8 @@ RUN yum groupinstall -y "Development Tools" && yum install -y \
     git \
     jq \
     ncurses-devel \
-    openssl \
-    openssl-devel \
+    openssl11 \
+    openssl11-devel \
     python3 \
     python3-pip \
     systemd \

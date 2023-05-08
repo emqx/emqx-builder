@@ -4,6 +4,10 @@ FROM ${BUILD_FROM}
 # Avoid getting asked questions during installation (tzdata)
 ENV DEBIAN_FRONTEND=noninteractive
 
+RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list && \
+    sed -i s/security.debian.org/archive.debian.org/g /etc/apt/sources.list && \
+    sed -i '/stretch-updates/d' /etc/apt/sources.list
+
 RUN apt-get update && apt-get install -y \
     autoconf \
     automake \
@@ -12,11 +16,14 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     debhelper \
+    expect \
     flex \
     g++ \
     gcc \
     git \
     jq \
+    krb5-admin-server \
+    krb5-kdc \
     libffi-dev \
     libkrb5-3 \
     libkrb5-dev \
@@ -28,22 +35,30 @@ RUN apt-get update && apt-get install -y \
     libtool \
     make \
     procps \
+    unixodbc \
+    unixodbc-dev \
     unzip \
     vim \
     wget \
     zip \
     zlib1g-dev
 
-# The following is not necessary for Kerberos authentication but makes testing
-# https://github.com/kafka4beam/sasl_auth easier
-RUN apt-get install -y \
-    krb5-kdc \
-    krb5-admin-server \
-    expect
-
-RUN apt-get update &&  apt-get install -y unixodbc unixodbc-dev
+ADD get-git.sh get-cmake.sh /
 
 WORKDIR /
+
+# We need git >= 2.18 otherwise actions/checkout@v3 in github
+# workflows will use REST API to download source code archive without
+# .git directory instead of normal git clone. And if release is
+# configured to take it's version from git tag, rebar3 will not be
+# able to resolve the version correctly and will fallback to 0.0.0,
+# like it happened with emqtt-bench.
+# The error from actions/checkout@v3 is as follows:
+# > The repository will be downloaded using the GitHub REST API
+# > To create a local Git repository instead, add Git 2.18 or higher to the PATH
+RUN apt-get install -y libcurl4-openssl-dev \
+    && /get-git.sh \
+    && git --version
 
 RUN apt-get install -y gcc make zlib1g-dev libffi-dev libssl-dev \
     && wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz \
@@ -57,17 +72,19 @@ RUN apt-get install -y gcc make zlib1g-dev libffi-dev libssl-dev \
     && rm -rf /usr/bin/python3 /usr/bin/python \
     && ln -s /usr/local/python3.7.4/bin/python3.7 /usr/bin/python3 \
     && ln -s /usr/local/python3.7.4/bin/python3.7 /usr/bin/python
+
 RUN curl -k -L -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py \
     && python /tmp/get-pip.py \
     && python3 /tmp/get-pip.py
+
 ENV PATH=/usr/local/python3.7.4/bin:$PATH
 
-COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
 # cleanup
-RUN apt-get clean\
- && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && rm /get-git.sh /get-cmake.sh
 
 # Elixir complains if runs without UTF-8
 ENV LC_ALL=C.UTF-8

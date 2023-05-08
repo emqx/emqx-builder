@@ -1,46 +1,36 @@
 ARG BUILD_FROM=amazonlinux:2
 FROM ${BUILD_FROM}
 
-RUN yum update -y && yum install -y \
-    autoconf \
-    automake \
-    bison \
+RUN yum update -y && yum groupinstall -y "Development Tools" && yum install -y \
     curl \
-    flex \
     git \
+    expect \
     jq \
-    libatomic \
-    libtool \
     ncurses-devel \
-    openssl \
-    openssl-devel \
+    openssl11 \
+    openssl11-devel \
     python3 \
     python3-pip \
     systemd \
     unixODBC \
     unixODBC-devel \
-    unzip \
     vim \
     wget \
     which \
-    zip \
     krb5-workstation \
+    krb5-server \
     cyrus-sasl-devel \
     cyrus-sasl \
-    cyrus-sasl-gssapi
+    cyrus-sasl-gssapi && \
+    yum clean packages
 
-# The following is not necessary for Kerberos authentication but makes testing
-# https://github.com/kafka4beam/sasl_auth easier
-RUN yum install -y \
-    krb5-server \
-    expect
-
-RUN yum groupinstall -y "Development Tools"
+ADD get-cmake.sh get-automake.sh  /
 
 WORKDIR /
 
-COPY get-cmake.sh /get-cmake.sh
-RUN /get-cmake.sh build
+RUN yum remove -y automake && \
+    /get-automake.sh && \
+    /get-cmake.sh build
 
 RUN alternatives --install /usr/bin/python python /usr/bin/python2 1 && \
     alternatives --install /usr/bin/python python /usr/bin/python3 2 && \
@@ -53,7 +43,8 @@ RUN alternatives --install /usr/bin/python python /usr/bin/python2 1 && \
 # cleanup
 RUN yum clean packages && \
     rm -rf /tmp/* && \
-    rm -rf /var/tmp/*
+    rm -rf /var/tmp/* && \
+    rm /get-cmake.sh /get-automake.sh
 
 # Elixir complains if runs without UTF-8
 ENV LC_ALL=C.UTF-8

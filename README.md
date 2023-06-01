@@ -1,31 +1,16 @@
-NOTE: Must sync Dockerfile chages from main-4.4 branch!
-
-# Docker images for EMQX Builder
+# Docker images for building EMQX v5 or later packages
 
 This repo holds the Dockerfile and build scripts to build
 docker images which are used to build EMQX.
 
 The `main-4.4` branch is for EMQX 4.4 series.
-The `main` branch is for EMQX 5.0 series.
+The `main` branch is for EMQX 5.x series.
 
 ## OTP repo https://github.com/emqx/otp.git
 
 EMQX uses a forked Erlang/OTP with the tag scheme `<UPSTREAM_TAG>-N`
 where `N` is the build number which includes bug fixes to Erlang/OTP source code.
 For example: `OTP-24.1.5-1`
-
-## Add new OTP / Elixir versions to build
-
-When we need to support a new OTP or Elixir version for a bugfix
-release, we should add a new OTP tag to the list in RELEASE.md
-
-for example, after `5.0.0-otp24.1.5-1` is released, in case there is a
-bug found in OTP which requires OTP `24.2-1`, we should add `+
-OTP-24.2-1` to the list.  For Elixir, once `1.13.2` is released, for
-example, it should be added as `+ Elixir-1.13.2` to the list.
-
-This list should be append-only in case we want to rebuild an old EMQX tag,
-we can still find an up-to-date docker image for it.
 
 ## Image tag scheme
 

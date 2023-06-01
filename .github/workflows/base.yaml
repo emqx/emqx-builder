@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        emqx_minor:
+        base_image_vsn:
           - "5.0"
         platform:
           - [ubuntu22.04 , "linux/amd64,linux/arm64"]
@@ -53,7 +53,7 @@ jobs:
       - uses: docker/metadata-action@v4
         id: base_meta
         with:
-          images: ghcr.io/${{ github.repository }}/base-${{ matrix.emqx_minor }}
+          images: ghcr.io/${{ github.repository }}/base-${{ matrix.base_image_vsn }}
           tags: type=raw,value=${{ matrix.platform[0] }}
       - name: Build base image
         uses: docker/build-push-action@v3

@@ -49,11 +49,7 @@ jobs:
           - [el8         , "linux/amd64,linux/arm64"]
           - [el7         , "linux/amd64,linux/arm64"]
           - [amzn2       , "linux/amd64,linux/arm64"]
-          # Exclude raspbian from tests
-          # It's not one of the target platforms as of now. If this changes it would
-          # probably be a good idea to include it back.
-          # - [raspbian10  , "linux/arm64"]
-          # - [raspbian9   , "linux/arm64"]
+          - [amzn2023    , "linux/amd64,linux/arm64"]
           - [alpine3.15.1, "linux/amd64,linux/arm64"]
 
     services:

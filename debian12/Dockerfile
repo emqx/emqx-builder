@@ -1,23 +1,21 @@
-ARG BUILD_FROM=ubuntu:22.04
+ARG BUILD_FROM=debian:12
 FROM ${BUILD_FROM}
 
+# Avoid getting asked questions during installation (tzdata)
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    apt-transport-https \
     autoconf \
     automake \
     autotools-dev \
     bison \
     build-essential \
-    ca-certificates \
     cmake \
     curl \
     debhelper \
     expect \
     flex \
     git \
-    inotify-tools \
     jq \
     krb5-admin-server \
     krb5-kdc \
@@ -30,9 +28,9 @@ RUN apt-get update && apt-get install -y \
     libsasl2-modules-gssapi-mit \
     libssl-dev \
     libtool \
+    procps \
     python3 \
     python3-pip \
-    software-properties-common \
     unixodbc \
     unixodbc-dev \
     unzip \
@@ -54,5 +52,4 @@ WORKDIR /
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
-WORKDIR /
 CMD [ "/bin/bash" ]

@@ -106,6 +106,7 @@ jobs:
           - [ubuntu20.04 , "linux/amd64,linux/arm64"]
           - [ubuntu18.04 , "linux/amd64,linux/arm64"]
           - [ubuntu16.04 , "linux/amd64,linux/arm64"]
+          - [debian12    , "linux/amd64,linux/arm64"]
           - [debian11    , "linux/amd64,linux/arm64"]
           - [debian10    , "linux/amd64,linux/arm64"]
           - [debian9     , "linux/amd64,linux/arm64"]

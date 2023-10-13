@@ -3,8 +3,11 @@
 This repo holds the Dockerfile and build scripts to build
 docker images which are used to build EMQX.
 
-The `main-4.4` branch is for EMQX 4.4 series.
-The `main` branch is for EMQX 5.x series.
+The docker images are also pulled by a few other Erlang repos in the CI builds.
+
+https://github.com/emqx/erlang-rocksdb
+https://github.com/emqx/quic
+https://github.com/emqx/emqtt
 
 ## OTP repo https://github.com/emqx/otp.git
 
@@ -22,9 +25,5 @@ Where `BUILDER_GIT_TAG` is of scheme `4.4-1` for images to build EMQX
 4.4.X and `5.0-1`, `5.0-2` for images to build EMQX 5.0.X.  `1.13.1` and
 `24.1.5-1` are the Elixir and OTP version, respectively.
 
-Notice that we do **not** track the _patch_ version of EMQX in our
-image scheme: we have one base image for each minor release that can
-be shared on a non one-to-one basis with several EMQX patch releases.
-
-For example: EMQX `5.0.0` and `5.0.3` may share the same
-`emqx-builder/5.0-2` image.
+Note that starting from 5.2, we no longer track EMQX versions in the image tag scheme.
+i.e. `emqx-builder:5.2` does not mean it's only intended to build EMQX 5.2.

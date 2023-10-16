@@ -65,7 +65,7 @@ erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "relea
 
 case "${OTP_VERSION}" in
     25*)
-        REBAR3_VERSION="${REBAR3_VERSION:-3.19.0-emqx-1}"
+        REBAR3_VERSION="${REBAR3_VERSION:-3.19.0-emqx-9}"
         ;;
     24*)
         REBAR3_VERSION="${REBAR3_VERSION:-3.18.0-emqx-1}"

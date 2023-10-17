@@ -4,7 +4,6 @@ concurrency:
   group: base-${{ github.ref }}
   cancel-in-progress: true
 
-## Update the base image every day
 on:
   workflow_dispatch:
 

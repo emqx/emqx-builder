@@ -30,27 +30,41 @@ jobs:
         echo "version=$elixir_version" >> $GITHUB_OUTPUT
 
   base:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.repository_owner == 'emqx' && matrix.platform[2] || '["ubuntu-latest"]' }}
     strategy:
       fail-fast: false
       matrix:
         base_image_vsn:
           - "5.0"
         platform:
-          - [ubuntu22.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu20.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu18.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu16.04 , "linux/amd64,linux/arm64"]
-          - [debian12    , "linux/amd64,linux/arm64"]
-          - [debian11    , "linux/amd64,linux/arm64"]
-          - [debian10    , "linux/amd64,linux/arm64"]
-          - [debian9     , "linux/amd64,linux/arm64"]
-          - [el9         , "linux/amd64,linux/arm64"]
-          - [el8         , "linux/amd64,linux/arm64"]
-          - [el7         , "linux/amd64,linux/arm64"]
-          - [amzn2       , "linux/amd64,linux/arm64"]
-          - [amzn2023    , "linux/amd64,linux/arm64"]
-          - [alpine3.15.1, "linux/amd64,linux/arm64"]
+          - [ubuntu22.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu22.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [ubuntu20.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu20.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [ubuntu18.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu18.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [ubuntu16.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu16.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian12, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian12, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian11, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian11, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian10, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian10, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian9, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el9, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el8, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el8, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el7, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el7, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [amzn2, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [amzn2, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [amzn2023, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [amzn2023, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [alpine3.15.1, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [alpine3.15.1, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
 
     steps:
       - uses: actions/checkout@v3
@@ -89,7 +103,7 @@ jobs:
         run: aws s3 sync --delete /tmp/.docker-buildx-cache-new s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }}
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.repository_owner == 'emqx' && matrix.platform[2] || '["ubuntu-latest"]' }}
     needs:
       - prepare
       - base
@@ -102,20 +116,34 @@ jobs:
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
         elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:
-          - [ubuntu22.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu20.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu18.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu16.04 , "linux/amd64,linux/arm64"]
-          - [debian12    , "linux/amd64,linux/arm64"]
-          - [debian11    , "linux/amd64,linux/arm64"]
-          - [debian10    , "linux/amd64,linux/arm64"]
-          - [debian9     , "linux/amd64,linux/arm64"]
-          - [el9         , "linux/amd64,linux/arm64"]
-          - [el8         , "linux/amd64,linux/arm64"]
-          - [el7         , "linux/amd64,linux/arm64"]
-          - [amzn2       , "linux/amd64,linux/arm64"]
-          - [amzn2023    , "linux/amd64,linux/arm64"]
-          - [alpine3.15.1, "linux/amd64,linux/arm64"]
+          - [ubuntu22.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu22.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [ubuntu20.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu20.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [ubuntu18.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu18.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [ubuntu16.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu16.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian12, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian12, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian11, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian11, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian10, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian10, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian9, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el9, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el8, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el8, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el7, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el7, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [amzn2, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [amzn2, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [amzn2023, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [amzn2023, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [alpine3.15.1, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [alpine3.15.1, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
 
     steps:
     - uses: actions/checkout@v3

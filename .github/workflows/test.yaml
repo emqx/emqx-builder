@@ -84,12 +84,6 @@ jobs:
           - [alpine3.15.1, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [alpine3.15.1, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
 
-    services:
-      registry:
-        image: registry:2
-        ports:
-          - 5000:5000
-
     steps:
     - uses: actions/checkout@v3
     - uses: aws-actions/configure-aws-credentials@v2
@@ -97,27 +91,31 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+    - uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+    - name: define base tag
+      id: base_tag
+      run: |
+        PLATFORM=${{ matrix.platform[1] }}
+        ARCH="${PLATFORM#linux/}"
+        TAG="${{ matrix.platform[0] }}-${ARCH}"
+        echo "tag=${TAG}" | tee -a $GITHUB_OUTPUT
+        echo "image=ghcr.io/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${TAG}" | tee -a $GITHUB_OUTPUT
     - name: Get cache
-      run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }} /tmp/.docker-buildx-cache
+      run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ steps.base_tag.outputs.tag }} /tmp/.docker-buildx-cache
     - uses: docker/setup-qemu-action@v3
     - uses: docker/setup-buildx-action@v3
       with:
         driver-opts: network=host
-    - name: Build base image
-      uses: docker/build-push-action@v5
-      with:
-        push: true
-        cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
-        platforms: ${{ matrix.platform[1] }}
-        tags: localhost:5000/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${{ matrix.platform[0] }}
-        file: ${{ matrix.platform[0] }}/Dockerfile
-        context: .
     - uses: docker/build-push-action@v5
       with:
         platforms: ${{ matrix.platform[1] }}
         cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
         build-args: |
-          BUILD_FROM=localhost:5000/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${{ matrix.platform[0] }}
+          BUILD_FROM=${{ steps.base_tag.outputs.image }}
           OTP_VERSION=${{ matrix.otp }}
           ELIXIR_VERSION=${{ matrix.elixir }}
         file: ./Dockerfile

@@ -1,4 +1,4 @@
-ARG BUILD_FROM=alpine:3.15.1
+ARG BUILD_FROM=public.ecr.aws/docker/library/alpine:3.15.1
 FROM ${BUILD_FROM}
 
 RUN apk add --no-cache --virtual .build-deps \

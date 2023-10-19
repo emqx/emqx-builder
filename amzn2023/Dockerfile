@@ -1,4 +1,4 @@
-ARG BUILD_FROM=amazonlinux:2023
+ARG BUILD_FROM=public.ecr.aws/amazonlinux/amazonlinux:2023
 FROM ${BUILD_FROM}
 
 RUN dnf -y update && \

@@ -48,6 +48,7 @@ jobs:
       - prepare
 
     strategy:
+      fail-fast: false
       matrix:
         base_image_vsn:
           - "5.0"

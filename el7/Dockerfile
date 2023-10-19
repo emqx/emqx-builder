@@ -1,4 +1,4 @@
-ARG BUILD_FROM=centos:7
+ARG BUILD_FROM=public.ecr.aws/docker/library/centos:7
 FROM ${BUILD_FROM}
 
 RUN yum install epel-release -y && yum update -y

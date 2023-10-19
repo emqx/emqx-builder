@@ -106,6 +106,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: true
+        cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
         platforms: ${{ matrix.platform[1] }}
         tags: localhost:5000/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${{ matrix.platform[0] }}
         file: ${{ matrix.platform[0] }}/Dockerfile
@@ -113,6 +114,7 @@ jobs:
     - uses: docker/build-push-action@v5
       with:
         platforms: ${{ matrix.platform[1] }}
+        cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
         build-args: |
           BUILD_FROM=localhost:5000/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${{ matrix.platform[0] }}
           OTP_VERSION=${{ matrix.otp }}

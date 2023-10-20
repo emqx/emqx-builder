@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ubuntu:20.04
+ARG BUILD_FROM=public.ecr.aws/ubuntu/ubuntu:20.04
 FROM ${BUILD_FROM}
 
 ENV DEBIAN_FRONTEND=noninteractive

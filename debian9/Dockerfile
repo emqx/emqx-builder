@@ -1,4 +1,4 @@
-ARG BUILD_FROM=debian:9
+ARG BUILD_FROM=public.ecr.aws/debian/debian:9
 FROM ${BUILD_FROM}
 
 # Avoid getting asked questions during installation (tzdata)

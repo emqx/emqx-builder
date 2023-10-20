@@ -8,8 +8,24 @@ on:
   pull_request:
 
 jobs:
+  sanity-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check workflow files
+        env:
+          ACTIONLINT_VSN: 1.6.25
+        run: |
+          wget https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VSN}/actionlint_${ACTIONLINT_VSN}_linux_amd64.tar.gz
+          tar zxf actionlint_${ACTIONLINT_VSN}_linux_amd64.tar.gz actionlint
+          # TODO: enable shellcheck when all the current issues are fixed
+          ./actionlint -color \
+            -shellcheck=
+
   prepare:
     runs-on: ubuntu-latest
+    needs:
+      - sanity-checks
     outputs:
       otp: ${{ steps.otp.outputs.version }}
       elixir: ${{ steps.elixir.outputs.version }}
@@ -27,37 +43,46 @@ jobs:
         echo "version=$elixir_version" >> $GITHUB_OUTPUT
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.repository_owner == 'emqx' && matrix.platform[2] || '["ubuntu-latest"]' }}
     needs:
       - prepare
 
     strategy:
+      fail-fast: false
       matrix:
         base_image_vsn:
           - "5.0"
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
         elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:
-          - [ubuntu22.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu20.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu18.04 , "linux/amd64,linux/arm64"]
-          - [ubuntu16.04 , "linux/amd64,linux/arm64"]
-          - [debian12    , "linux/amd64,linux/arm64"]
-          - [debian11    , "linux/amd64,linux/arm64"]
-          - [debian10    , "linux/amd64,linux/arm64"]
-          - [debian9     , "linux/amd64,linux/arm64"]
-          - [el9         , "linux/amd64,linux/arm64"]
-          - [el8         , "linux/amd64,linux/arm64"]
-          - [el7         , "linux/amd64,linux/arm64"]
-          - [amzn2       , "linux/amd64,linux/arm64"]
-          - [amzn2023    , "linux/amd64,linux/arm64"]
-          - [alpine3.15.1, "linux/amd64,linux/arm64"]
-
-    services:
-      registry:
-        image: registry:2
-        ports:
-          - 5000:5000
+          - [ubuntu22.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu22.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [ubuntu20.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu20.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [ubuntu18.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu18.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [ubuntu16.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu16.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian12, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian12, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian11, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian11, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian10, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian10, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [debian9, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [debian9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el9, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el8, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el8, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el7, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el7, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [amzn2, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [amzn2, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [amzn2023, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [amzn2023, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [alpine3.15.1, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [alpine3.15.1, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
 
     steps:
     - uses: actions/checkout@v3
@@ -66,25 +91,31 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+    - uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+    - name: define base tag
+      id: base_tag
+      run: |
+        PLATFORM=${{ matrix.platform[1] }}
+        ARCH="${PLATFORM#linux/}"
+        TAG="${{ matrix.platform[0] }}-${ARCH}"
+        echo "tag=${TAG}" | tee -a $GITHUB_OUTPUT
+        echo "image=ghcr.io/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${TAG}" | tee -a $GITHUB_OUTPUT
     - name: Get cache
-      run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ matrix.platform[0] }} /tmp/.docker-buildx-cache
-    - uses: docker/setup-qemu-action@v2
-    - uses: docker/setup-buildx-action@v2
+      run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ steps.base_tag.outputs.tag }} /tmp/.docker-buildx-cache
+    - uses: docker/setup-qemu-action@v3
+    - uses: docker/setup-buildx-action@v3
       with:
         driver-opts: network=host
-    - name: Build base image
-      uses: docker/build-push-action@v3
-      with:
-        push: true
-        platforms: ${{ matrix.platform[1] }}
-        tags: localhost:5000/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${{ matrix.platform[0] }}
-        file: ${{ matrix.platform[0] }}/Dockerfile
-        context: .
-    - uses: docker/build-push-action@v3
+    - uses: docker/build-push-action@v5
       with:
         platforms: ${{ matrix.platform[1] }}
+        cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
         build-args: |
-          BUILD_FROM=localhost:5000/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${{ matrix.platform[0] }}
+          BUILD_FROM=${{ steps.base_tag.outputs.image }}
           OTP_VERSION=${{ matrix.otp }}
           ELIXIR_VERSION=${{ matrix.elixir }}
         file: ./Dockerfile

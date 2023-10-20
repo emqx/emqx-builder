@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ubuntu:16.04
+ARG BUILD_FROM=public.ecr.aws/docker/library/ubuntu:16.04
 FROM ${BUILD_FROM}
 
 # Avoid getting asked questions during installation (tzdata)

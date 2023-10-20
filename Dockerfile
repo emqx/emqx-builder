@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ubuntu:22.04
+ARG BUILD_FROM=public.ecr.aws/ubuntu/ubuntu:22.04
 FROM ${BUILD_FROM}
 
 ENV EMQX_BUILDER_IMAGE=${BUILD_FROM}

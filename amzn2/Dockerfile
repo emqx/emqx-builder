@@ -1,4 +1,4 @@
-ARG BUILD_FROM=amazonlinux:2
+ARG BUILD_FROM=public.ecr.aws/amazonlinux/amazonlinux:2
 FROM ${BUILD_FROM}
 
 RUN yum update -y

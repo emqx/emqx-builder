@@ -175,8 +175,6 @@ jobs:
       id: meta
       with:
         images: ${{ steps.registry.outputs.image }}
-        tags: |
-          type=raw,value=${{ matrix.elixir }}-${{ matrix.otp }}-${{ matrix.platform[0] }}
     - name: define base tag
       id: base_tag
       run: |
@@ -191,7 +189,6 @@ jobs:
         pull: true
         no-cache: true
         platforms: ${{ matrix.platform[1] }}
-        tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           BUILD_FROM=${{ steps.base_tag.outputs.image }}
@@ -202,26 +199,45 @@ jobs:
         outputs: type=image,name=${{ steps.registry.outputs.image }},push-by-digest=true,name-canonical=true,push=true
     - name: Export digests
       run: |
-        mkdir -p /tmp/digests-build
+        mkdir -p /tmp/digests
         digest="${{ steps.build.outputs.digest }}"
-        touch "/tmp/digests-build/${digest#sha256:}"
+        touch "/tmp/digests/${digest#sha256:}"
     - name: Upload digest
       uses: actions/upload-artifact@v3
       with:
-        name: digests-build
-        path: /tmp/digests-build/*
+        name: "digests-${{ matrix.platform[0] }}-${{ matrix.otp }}-${{ matrix.elixir }}"
+        path: /tmp/digests/*
         if-no-files-found: error
         retention-days: 1
 
-  merge-build:
+  merge:
     runs-on: ubuntu-latest
     needs:
+      - prepare
       - build
     strategy:
       fail-fast: false
       matrix:
         base_image_vsn:
           - "5.0"
+        otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
+        elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
+        platform:
+          - ubuntu22.04
+          - ubuntu20.04
+          - ubuntu18.04
+          - ubuntu16.04
+          - debian12
+          - debian11
+          - debian10
+          - debian9
+          - el9
+          - el8
+          - el7
+          - amzn2
+          - amzn2023
+          - alpine3.15.1
+
     steps:
       - name: Get ref
         id: ref
@@ -233,8 +249,8 @@ jobs:
       - name: Download digests
         uses: actions/download-artifact@v3
         with:
-          name: digests-build
-          path: /tmp/digests-build
+          name: "digests-${{ matrix.platform }}-${{ matrix.otp }}-${{ matrix.elixir }}"
+          path: /tmp/digests
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Docker meta
@@ -242,6 +258,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ steps.registry.outputs.image }}
+          tags: |
+            type=raw,value=${{ matrix.elixir }}-${{ matrix.otp }}-${{ matrix.platform }}
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -249,7 +267,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
       - name: Create manifest list and push
-        working-directory: /tmp/digests-build
+        working-directory: /tmp/digests
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
             $(printf '${{ steps.registry.outputs.image }}@sha256:%s ' *)
@@ -259,7 +277,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: merge-build
+    needs: merge
 
     if: startsWith(github.ref, 'refs/tags/')
 

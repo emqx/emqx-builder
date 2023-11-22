@@ -18,10 +18,10 @@ RUN mkdir /tools
 ARG EMQTT_BENCH_REF
 
 COPY get-emqtt-bench.sh /get-emqtt-bench.sh
-RUN /get-emqtt-bench.sh "${EMQTT_BENCH_REF:-0.4.11}"
+RUN /get-emqtt-bench.sh "${EMQTT_BENCH_REF:-0.4.17}"
 
 ARG LUX_REF
-ENV LUX_REF=${LUX_REF:-lux-2.6}
+ENV LUX_REF=${LUX_REF:-lux-2.9.1}
 
 RUN git clone --depth=1 --branch=${LUX_REF} https://github.com/hawk/lux /tools/lux \
     && cd /tools/lux \

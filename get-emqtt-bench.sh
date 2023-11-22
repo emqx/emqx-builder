@@ -2,7 +2,7 @@
 
 set -xeuo pipefail
 
-VSN="${1:-0.4.11}"
+VSN="${1:-0.4.17}"
 
 if grep -q -i 'rhel' /etc/os-release; then
     DIST='el'

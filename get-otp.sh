@@ -64,14 +64,14 @@ erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "relea
 #########################
 
 case "${OTP_VERSION}" in
+    26*)
+        REBAR3_VERSION="${REBAR3_VERSION:-3.19.0-emqx-9}"
+        ;;
     25*)
         REBAR3_VERSION="${REBAR3_VERSION:-3.19.0-emqx-9}"
         ;;
     24*)
         REBAR3_VERSION="${REBAR3_VERSION:-3.18.0-emqx-1}"
-        ;;
-    2*)
-        REBAR3_VERSION="${REBAR3_VERSION:-3.14.3-emqx-4}"
         ;;
     *)
         echo "OTP_VERSION is invalid: ${OTP_VERSION}"

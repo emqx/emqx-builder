@@ -127,6 +127,7 @@ jobs:
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
         elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:
+          - [ubuntu22.04fdb, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [ubuntu22.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [ubuntu22.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [ubuntu20.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
@@ -224,6 +225,7 @@ jobs:
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
         elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:
+          - ubuntu22.04fdb
           - ubuntu22.04
           - ubuntu20.04
           - ubuntu18.04

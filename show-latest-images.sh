@@ -3,7 +3,7 @@
 ## This script prints out all the possible emqx-builder docker image tags built from the latest git tag
 
 GREP='grep --color=never'
-ALL_SYS="$($GREP -A20 'platform:' .github/workflows/main.yaml | \
+ALL_SYS="$($GREP -A28 'platform:' .github/workflows/main.yaml | \
             $GREP -E '\-\s?\[.*\]$' | \
             tr -d '\- []"' | \
             sed -e '/^#.*/d' | \

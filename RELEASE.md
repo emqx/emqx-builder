@@ -4,7 +4,7 @@ OTP version from emqx/otp.git:
 
 + OTP-24.3.4.2-1
 + OTP-25.3.2-2
-+ OTP-26.1.2-2
++ OTP-26.1.2-3
 
 Elixir version from elixir-lang/elixir.git:
 NOTE: Only one version is allowed.

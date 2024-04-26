@@ -3,34 +3,20 @@ FROM ${BUILD_FROM}
 
 ENV EMQX_BUILDER_IMAGE=${BUILD_FROM}
 
-ARG OTP_VERSION
+ARG OTP_VERSION=26.2.3-1
+ARG ELIXIR_VERSION=1.15.7
+ARG FDB_VERSION=7.3.27
+ARG EMQTT_BENCH_REF=0.4.17
+ARG LUX_REF=lux-2.9.1
 
-COPY get-otp.sh /get-otp.sh
-RUN /get-otp.sh ${OTP_VERSION}
+COPY get-otp.sh get-elixir.sh get-fdb.sh get-emqtt-bench.sh get-lux.sh /
 
-ARG ELIXIR_VERSION
-
-COPY get-elixir.sh /get-elixir.sh
-RUN /get-elixir.sh ${ELIXIR_VERSION}
-
-RUN mkdir /tools
-
-ARG EMQTT_BENCH_REF
-
-COPY get-emqtt-bench.sh /get-emqtt-bench.sh
-RUN /get-emqtt-bench.sh "${EMQTT_BENCH_REF:-0.4.17}"
-
-ARG LUX_REF
-ENV LUX_REF=${LUX_REF:-lux-2.9.1}
-
-RUN git clone --depth=1 --branch=${LUX_REF} https://github.com/hawk/lux /tools/lux \
-    && cd /tools/lux \
-    && autoconf \
-    && ./configure \
-    && make \
-    && make install \
-    && cd /tools \
-    && rm -rf lux
+RUN /get-otp.sh ${OTP_VERSION} && \
+    /get-elixir.sh ${ELIXIR_VERSION} && \
+    env FDB_VERSION=${FDB_VERSION} /get-fdb.sh && \
+    env EMQTT_BENCH_REF=${EMQTT_BENCH_REF} /get-emqtt-bench.sh && \
+    env LUX_REF=${LUX_REF} /get-lux.sh && \
+    rm /get-otp.sh /get-elixir.sh /get-fdb.sh /get-emqtt-bench.sh /get-lux.sh
 
 WORKDIR /
 CMD [ "/bin/bash" ]

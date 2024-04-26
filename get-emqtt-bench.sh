@@ -4,14 +4,19 @@ set -xeuo pipefail
 
 VSN="${1:-0.4.17}"
 
-if grep -q -i 'rhel' /etc/os-release; then
+. /etc/os-release
+if [[ "${ID_LIKE:-}" =~ rhel|fedora ]]; then
     DIST='el'
-    VERSION_ID="$(rpm --eval '%{rhel}')"
-else
-    DIST="$(sed -n '/^ID=/p' /etc/os-release | sed -r 's/ID=(.*)/\1/g' | sed 's/"//g')"
-    VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/"//g')"
+    case ${ID} in
+        amzn)
+            VERSION_ID="7"
+            ;;
+        *)
+            VERSION_ID="${VERSION_ID%%.*}"
+            ;;
+    esac
 fi
-SYSTEM="$(echo "${DIST}${VERSION_ID}" | sed -r 's/([a-zA-Z]*)-.*/\1/g')"
+SYSTEM="${ID}${VERSION_ID}"
 
 # no quic on raspbian9 and centos7
 case "$SYSTEM" in

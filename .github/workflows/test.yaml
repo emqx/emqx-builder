@@ -55,23 +55,18 @@ jobs:
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
         elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:
-          - [ubuntu22.04fdb, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [ubuntu22.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [ubuntu22.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [ubuntu20.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [ubuntu20.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [ubuntu18.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [ubuntu18.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [ubuntu16.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [ubuntu16.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [debian12, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [debian12, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [debian11, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [debian11, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [debian10, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [debian10, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [debian9, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [debian9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [el9, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [el9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [el8, linux/amd64, [self-hosted, linux, x64, ephemeral]]

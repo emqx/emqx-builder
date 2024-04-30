@@ -17,7 +17,7 @@ jobs:
       otp: ${{ steps.otp.outputs.version }}
       elixir: ${{ steps.elixir.outputs.version }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
     - name: get otp_version
       id: otp
       run: |
@@ -37,6 +37,8 @@ jobs:
         base_image_vsn:
           - "5.0"
         platform:
+          - [ubuntu24.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu24.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [ubuntu22.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [ubuntu22.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [ubuntu20.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
@@ -66,8 +68,8 @@ jobs:
       REGISTRY_IMAGE: ghcr.io/${{ github.repository }}/base-${{ matrix.base_image_vsn }}
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: aws-actions/configure-aws-credentials@v2
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -80,21 +82,21 @@ jobs:
           echo "tag=${{ matrix.platform[0] }}-${ARCH}" | tee -a $GITHUB_OUTPUT
       - name: Get cache
         run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ steps.base_tag.outputs.tag }} /tmp/.docker-buildx-cache
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
+      - uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
+      - uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3.1.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - uses: docker/metadata-action@v5
+      - uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         id: base_meta
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: type=raw,value=${{ steps.base_tag.outputs.tag }}
       - name: Build base image
         id: build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
         with:
           pull: true
           push: true
@@ -122,7 +124,8 @@ jobs:
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
         elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:
-          - [ubuntu22.04fdb, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu24.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu24.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [ubuntu22.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [ubuntu22.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [ubuntu20.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
@@ -153,7 +156,7 @@ jobs:
           - [alpine3.15.1, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
     - name: Get ref
       id: ref
       run: echo "ref=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
@@ -161,14 +164,14 @@ jobs:
       id: registry
       run: |
         echo "image=ghcr.io/${{ github.repository }}/${{ steps.ref.outputs.ref }}" | tee -a $GITHUB_OUTPUT
-    - uses: docker/setup-buildx-action@v3
-    - uses: docker/setup-qemu-action@v3
-    - uses: docker/login-action@v3
+    - uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
+    - uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
+    - uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3.1.0
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ github.token }}
-    - uses: docker/metadata-action@v5
+    - uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
       id: meta
       with:
         images: ${{ steps.registry.outputs.image }}
@@ -180,7 +183,7 @@ jobs:
         TAG="${{ matrix.platform[0] }}-${ARCH}"
         echo "tag=${TAG}" | tee -a $GITHUB_OUTPUT
         echo "image=ghcr.io/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${TAG}" | tee -a $GITHUB_OUTPUT
-    - uses: docker/build-push-action@v5
+    - uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
       id: build
       with:
         pull: true
@@ -200,7 +203,7 @@ jobs:
         digest="${{ steps.build.outputs.digest }}"
         touch "/tmp/digests/${digest#sha256:}"
     - name: Upload digest
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
       with:
         name: "digests-${{ matrix.platform[0] }}-${{ matrix.otp }}-${{ matrix.elixir }}"
         path: /tmp/digests/*
@@ -220,15 +223,13 @@ jobs:
         otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
         elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
         platform:
-          - ubuntu22.04fdb
+          - ubuntu24.04
           - ubuntu22.04
           - ubuntu20.04
           - ubuntu18.04
-          - ubuntu16.04
           - debian12
           - debian11
           - debian10
-          - debian9
           - el9
           - el8
           - el7
@@ -245,21 +246,21 @@ jobs:
         run: |
           echo "image=ghcr.io/${{ github.repository }}/${{ steps.ref.outputs.ref }}" | tee -a $GITHUB_OUTPUT
       - name: Download digests
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
           name: "digests-${{ matrix.platform }}-${{ matrix.otp }}-${{ matrix.elixir }}"
           path: /tmp/digests
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         with:
           images: ${{ steps.registry.outputs.image }}
           tags: |
             type=raw,value=${{ matrix.elixir }}-${{ matrix.otp }}-${{ matrix.platform }}
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3.1.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -280,10 +281,10 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1.1.4
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:

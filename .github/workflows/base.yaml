@@ -18,6 +18,8 @@ jobs:
         base_image_vsn:
           - "5.0"
         platform:
+          - [ubuntu24.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [ubuntu24.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [ubuntu22.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [ubuntu22.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [ubuntu20.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
@@ -47,8 +49,8 @@ jobs:
       REGISTRY_IMAGE: ghcr.io/${{ github.repository }}/base-${{ matrix.base_image_vsn }}
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: aws-actions/configure-aws-credentials@v2
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -61,20 +63,20 @@ jobs:
           echo "tag=${{ matrix.platform[0] }}-${ARCH}" | tee -a $GITHUB_OUTPUT
       - name: Get cache
         run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ steps.base_tag.outputs.tag }} /tmp/.docker-buildx-cache
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
+      - uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
+      - uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3.1.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - uses: docker/metadata-action@v5
+      - uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         id: base_meta
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: type=raw,value=${{ steps.base_tag.outputs.tag }}
       - name: Build base image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
         with:
           push: true
           pull: true

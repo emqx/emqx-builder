@@ -36,7 +36,7 @@ elif [[ "${ID:-}" =~ debian|ubuntu ]]; then
     ARCH=$(dpkg --print-architecture)
     SYSTEM="${ID}${VERSION_ID}"
     case ${SYSTEM} in
-        debian11 | debian12 | ubuntu20.04 | ubuntu22.04)
+        debian11 | debian12 | ubuntu20.04 | ubuntu22.04 | ubuntu24.04)
             wget "${BASE_URL}/foundationdb-clients_${FDB_VERSION}-1_${ARCH}.deb" -O foundationdb-clients.deb
             dpkg -i foundationdb-clients.deb
             rm foundationdb-clients.deb

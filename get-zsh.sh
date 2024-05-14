@@ -15,7 +15,7 @@ chmod +x zsh-in-docker.sh
     -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
     -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
     -p git \
-    -p git-fast
+    -p git-fast \
     -p https://github.com/zsh-users/zsh-autosuggestions \
     -p https://github.com/zsh-users/zsh-completions \
     -p https://github.com/zsh-users/zsh-history-substring-search \

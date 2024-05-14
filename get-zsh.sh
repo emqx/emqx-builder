@@ -2,15 +2,15 @@
 
 set -euo pipefail
 
-URL="https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh"
+git clone https://github.com/emqx/zsh-in-docker.git -b 0514-support-other-rhel-distros
 
-cd /
-curl --silent --show-error -fkL "$URL" -o "zsh-in-docker.sh"
+cd zsh-in-docker
+#curl --silent --show-error -fkL "$URL" -o "zsh-in-docker.sh"
 chmod +x zsh-in-docker.sh
 
 ## build
-
- ./zsh-in-docker.sh \
+alternatives --list | grep python && alternatives --set python /usr/bin/python2 || true
+./zsh-in-docker.sh \
     -t https://github.com/denysdovhan/spaceship-prompt \
     -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
     -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
@@ -23,9 +23,8 @@ chmod +x zsh-in-docker.sh
     -p 'history-substring-search' \
     -a 'bindkey "\$terminfo[kcuu1]" history-substring-search-up' \
     -a 'bindkey "\$terminfo[kcud1]" history-substring-search-down'
-
+alternatives --list | grep python && alternatives --set python /usr/bin/python3 || true
 
 ## cleanup
 cd /
-rm -rf zsh-in-docker.sh
-
+rm -rf zsh-in-docker

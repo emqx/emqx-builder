@@ -12,7 +12,7 @@ ARG LUX_REF=lux-2.9.1
 
 COPY get-otp.sh get-zsh.sh get-elixir.sh get-fdb.sh get-emqtt-bench.sh get-lux.sh /
 
-RUN  /get-zsh.sh && \
+RUN /get-zsh.sh && \
     /get-otp.sh ${OTP_VERSION} && \
     /get-elixir.sh ${ELIXIR_VERSION} && \    
     env FDB_VERSION=${FDB_VERSION} /get-fdb.sh && \

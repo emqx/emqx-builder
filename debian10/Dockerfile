@@ -54,7 +54,7 @@ RUN wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz \
     && ln -s /usr/local/python3.7.4/bin/python3.7 /usr/bin/python3 \
     && ln -s /usr/local/python3.7.4/bin/python3.7 /usr/bin/python
 
-RUN curl -k -L -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py \
+RUN curl -k -L -o /tmp/get-pip.py https://bootstrap.pypa.io/pip/3.7/get-pip.py \
     && python /tmp/get-pip.py \
     && python3 /tmp/get-pip.py
 

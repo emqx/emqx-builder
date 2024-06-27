@@ -51,8 +51,8 @@ RUN wget https://www.python.org/ftp/python/3.9.2/Python-3.9.2.tgz \
     && make \
     && make install \
     && rm -rf /usr/bin/python3 /usr/bin/python \
-    && ln -s /usr/local/python3.9.2/bin/python3.7 /usr/bin/python3 \
-    && ln -s /usr/local/python3.9.2/bin/python3.7 /usr/bin/python
+    && ln -s /usr/local/python3.9.2/bin/python3.9 /usr/bin/python3 \
+    && ln -s /usr/local/python3.9.2/bin/python3.9 /usr/bin/python
 
 RUN curl -k -L -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py \
     && python /tmp/get-pip.py \

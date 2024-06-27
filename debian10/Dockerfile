@@ -42,23 +42,23 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz \
-    && tar xvf Python-3.7.4.tgz \
-    && cd Python-3.7.4 \
+RUN wget https://www.python.org/ftp/python/3.9.2/Python-3.9.2.tgz \
+    && tar xvf Python-3.9.2.tgz \
+    && cd Python-3.9.2 \
     && echo "_socket socketmodule.c" >> Modules/Setup.dist \
     && echo "_ssl _ssl.c -DUSE_SSL -I/usr/local/ssl/include -I/usr/local/ssl/include/openssl -L/usr/local/ssl/lib -lssl -lcrypto" >> Modules/Setup.dist \
-    && ./configure --prefix=/usr/local/python3.7.4 \
+    && ./configure --prefix=/usr/local/python3.9.2 \
     && make \
     && make install \
     && rm -rf /usr/bin/python3 /usr/bin/python \
-    && ln -s /usr/local/python3.7.4/bin/python3.7 /usr/bin/python3 \
-    && ln -s /usr/local/python3.7.4/bin/python3.7 /usr/bin/python
+    && ln -s /usr/local/python3.9.2/bin/python3.9 /usr/bin/python3 \
+    && ln -s /usr/local/python3.9.2/bin/python3.9 /usr/bin/python
 
 RUN curl -k -L -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py \
     && python /tmp/get-pip.py \
     && python3 /tmp/get-pip.py
 
-ENV PATH=/usr/local/python3.7.4/bin:$PATH
+ENV PATH=/usr/local/python3.9.2/bin:$PATH
 
 ADD get-git.sh get-cmake.sh /
 

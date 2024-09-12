@@ -16,7 +16,6 @@ baseurl=https://vault.centos.org/centos/$releasever/os/Source/
 gpgcheck=1
 enabled=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
 
 #released updates 
 [updates-source]
@@ -25,7 +24,6 @@ baseurl=https://vault.centos.org/centos/$releasever/updates/Source/
 gpgcheck=1
 enabled=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
 
 #additional packages that may be useful
 [extras-source]
@@ -34,7 +32,6 @@ baseurl=https://vault.centos.org/centos/$releasever/extras/Source/
 gpgcheck=1
 enabled=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
 
 #additional packages that extend functionality of existing packages
 [centosplus-source]
@@ -43,4 +40,3 @@ baseurl=https://vault.centos.org/centos/$releasever/centosplus/Source/
 gpgcheck=1
 enabled=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64

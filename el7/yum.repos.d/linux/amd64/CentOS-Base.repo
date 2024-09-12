@@ -12,47 +12,43 @@
 
 [base]
 name=CentOS-$releasever - Base
-baseurl=https://vault.centos.org/$releasever/os/$basearch/
+baseurl=https://vault.centos.org/centos/$releasever/os/$basearch/
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
 
 #released updates 
 [updates]
 name=CentOS-$releasever - Updates
-baseurl=https://vault.centos.org/$releasever/updates/$basearch/
+baseurl=https://vault.centos.org/centos/$releasever/updates/$basearch/
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
 
 #additional packages that may be useful
 [extras]
 name=CentOS-$releasever - Extras
-baseurl=https://vault.centos.org/$releasever/extras/$basearch/
+baseurl=https://vault.centos.org/centos/$releasever/extras/$basearch/
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
 enabled=1
 
 #additional packages that extend functionality of existing packages
 [centosplus]
 name=CentOS-$releasever - Plus
-baseurl=https://vault.centos.org/$releasever/centosplus/$basearch/
+baseurl=https://vault.centos.org/centos/$releasever/centosplus/$basearch/
 gpgcheck=1
 enabled=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
 
 [centos-sclo-rh]
 name=CentOS-$releasever - SCLo rh
-baseurl=https://vault.centos.org/$releasever/sclo/$basearch/rh/
+baseurl=https://vault.centos.org/centos/$releasever/sclo/$basearch/rh/
 gpgcheck=1
 enabled=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
 
 [centos-sclo-sclo]
 name=CentOS-$releasever - SCLo sclo
-baseurl=https://vault.centos.org/$releasever/sclo/$basearch/sclo/
+baseurl=https://vault.centos.org/centos/$releasever/sclo/$basearch/sclo/
 gpgcheck=1
 enabled=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo

@@ -4,7 +4,6 @@ baseurl=https://vault.centos.org/centos/7/kernel/$basearch/kernel-$kvariant
 enabled=0
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
 
 [centos-kernel-experimental]
 name=CentOS Experimental Kernels for $basearch
@@ -12,5 +11,4 @@ baseurl=https://vault.centos.org/centos/7/experimental/$basearch/kernel-$kvarian
 enabled=0
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
 

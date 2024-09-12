@@ -22,7 +22,7 @@
 
 [cr]
 name=CentOS-$releasever - cr
-baseurl=http://vault.centos.org/$releasever/cr/$basearch/
+baseurl=https://vault.centos.org/$releasever/cr/$basearch/
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
        file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64

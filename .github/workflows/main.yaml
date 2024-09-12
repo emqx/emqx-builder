@@ -55,6 +55,8 @@ jobs:
           - [el9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [el8, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [el8, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el7, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el7, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [amzn2, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [amzn2, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [amzn2023, linux/amd64, [self-hosted, linux, x64, ephemeral]]
@@ -140,6 +142,8 @@ jobs:
           - [el9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [el8, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [el8, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+          - [el7, linux/amd64, [self-hosted, linux, x64, ephemeral]]
+          - [el7, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [amzn2, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [amzn2, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
           - [amzn2023, linux/amd64, [self-hosted, linux, x64, ephemeral]]
@@ -224,6 +228,7 @@ jobs:
           - debian10
           - el9
           - el8
+          - el7
           - amzn2
           - amzn2023
           - alpine3.15.1

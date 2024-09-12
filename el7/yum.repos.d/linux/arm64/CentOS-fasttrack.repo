@@ -1,0 +1,8 @@
+[fasttrack]
+name=CentOS-7 - fasttrack
+baseurl=http://vault.centos.org/altarch/$releasever/fasttrack/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
+

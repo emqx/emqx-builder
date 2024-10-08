@@ -1,4 +1,4 @@
-ARG BUILD_FROM=debian:10
+ARG BUILD_FROM=public.ecr.aws/debian/debian:10
 FROM ${BUILD_FROM}
 
 # Avoid getting asked questions during installation (tzdata)
@@ -12,11 +12,15 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     debhelper \
+    expect \
     flex \
     g++ \
     gcc \
     git \
     jq \
+    krb5-admin-server \
+    krb5-kdc \
+    libcurl4-openssl-dev \
     libffi-dev \
     libkrb5-3 \
     libkrb5-dev \
@@ -27,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libtool \
     make \
+    make \
     procps \
     unixodbc \
     unixodbc-dev \
@@ -34,38 +39,33 @@ RUN apt-get update && apt-get install -y \
     vim \
     wget \
     zip \
-    zlib1g-dev
+    zlib1g-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# The following is not necessary for Kerberos authentication but makes testing
-# https://github.com/kafka4beam/sasl_auth easier
-RUN apt-get install -y \
-    krb5-kdc \
-    krb5-admin-server \
-    expect
-
-RUN apt-get install -y gcc make zlib1g-dev libffi-dev libssl-dev \
-    && wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz \
-    && tar xvf Python-3.7.4.tgz \
-    && cd Python-3.7.4 \
+ARG PYTHON_VERSION=3.9.2
+RUN wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz \
+    && tar xvf Python-${PYTHON_VERSION}.tgz \
+    && cd Python-${PYTHON_VERSION} \
     && echo "_socket socketmodule.c" >> Modules/Setup.dist \
     && echo "_ssl _ssl.c -DUSE_SSL -I/usr/local/ssl/include -I/usr/local/ssl/include/openssl -L/usr/local/ssl/lib -lssl -lcrypto" >> Modules/Setup.dist \
-    && ./configure --prefix=/usr/local/python3.7.4 \
+    && ./configure --prefix=/usr/local/python${PYTHON_VERSION} \
     && make \
     && make install \
     && rm -rf /usr/bin/python3 /usr/bin/python \
-    && ln -s /usr/local/python3.7.4/bin/python3.7 /usr/bin/python3 \
-    && ln -s /usr/local/python3.7.4/bin/python3.7 /usr/bin/python
+    && ln -s /usr/local/python${PYTHON_VERSION}/bin/python${PYTHON_VERSION%.*} /usr/bin/python3 \
+    && ln -s /usr/local/python${PYTHON_VERSION}/bin/python${PYTHON_VERSION%.*} /usr/bin/python
+
 RUN curl -k -L -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py \
     && python /tmp/get-pip.py \
     && python3 /tmp/get-pip.py
-ENV PATH=/usr/local/python3.7.4/bin:$PATH
 
-COPY get-cmake.sh /get-cmake.sh
-RUN /get-cmake.sh build
+ENV PATH=/usr/local/python${PYTHON_VERSION}/bin:$PATH
 
-# cleanup
-RUN apt-get clean\
- && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+ADD get-git.sh get-cmake.sh /
+
+RUN /get-git.sh && git --version && rm /get-git.sh
+
+RUN /get-cmake.sh build && rm /get-cmake.sh
 
 # Elixir complains if runs without UTF-8
 ENV LC_ALL=C.UTF-8

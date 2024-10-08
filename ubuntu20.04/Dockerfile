@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ubuntu:20.04
+ARG BUILD_FROM=public.ecr.aws/ubuntu/ubuntu:20.04
 FROM ${BUILD_FROM}
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     g++ \
     gcc \
     git \
+    inotify-tools \
     jq \
     libffi-dev \
     libkrb5-3 \

@@ -1,12 +1,29 @@
 ARG BUILD_FROM=centos:7
 FROM ${BUILD_FROM}
+ARG TARGETPLATFORM
 
-RUN yum install epel-release -y && yum update -y
-RUN yum install -y autoconf \
+COPY el7/RPM-GPG-KEY-CentOS-SIG-SCLo /etc/pki/rpm-gpg/
+COPY el7/yum.repos.d/${TARGETPLATFORM}/* /etc/yum.repos.d/
+
+RUN yum clean all && \
+    yum makecache && \
+    yum install epel-release -y && yum update -y
+
+RUN yum groupinstall -y "Development Tools" && \
+    yum install -y autoconf \
                    bison-devel \
+                   centos-release-scl \
                    curl \
+                   cyrus-sasl \
+                   cyrus-sasl-devel \
+                   cyrus-sasl-gssapi \
+                   devtoolset-8-gcc \
+                   devtoolset-8-gcc-c++ \
+                   expect \
                    flex-devel \
                    jq \
+                   krb5-server \
+                   krb5-workstation \
                    libatomic \
                    libtool \
                    ncurses-devel \
@@ -21,59 +38,34 @@ RUN yum install -y autoconf \
                    zip \
                    zlib-devel
 
-RUN yum install -y \
-    krb5-workstation \
-    cyrus-sasl-devel \
-    cyrus-sasl \
-    cyrus-sasl-gssapi
-
-
-# The following is not necessary for Kerberos authentication but makes testing
-# https://github.com/kafka4beam/sasl_auth easier
-RUN yum install -y \
-    krb5-server \
-    expect
-
-RUN yum groupinstall -y "Development Tools"
-
-RUN yum install -y centos-release-scl
-RUN yum install -y devtoolset-8-gcc devtoolset-8-gcc-c++
-
-ADD install-openssl11.sh /install-openssl11.sh
-RUN /install-openssl11.sh
+ADD install-openssl11.sh get-git.sh get-automake.sh get-cmake.sh /
 
 WORKDIR /
 
-ENV GIT_VERSION=2.38.1 DEVELOPER_CFLAGS='-std=gnu99'
+# We need git >= 2.18 otherwise actions/checkout@v3 in github
+# workflows will use REST API to download source code archive without
+# .git directory instead of normal git clone. And if release is
+# configured to take it's version from git tag, rebar3 will not be
+# able to resolve the version correctly and will fallback to 0.0.0,
+# like it happened with emqtt-bench.
+# The error from actions/checkout@v3 is as follows:
+# > The repository will be downloaded using the GitHub REST API
+# > To create a local Git repository instead, add Git 2.18 or higher to the PATH
+
 # - have to uninstall stock git to cleanup all git backend files,
 #   otherwise git from the newer version may encounter
 #   an error like "bogus format in GIT_CONFIG_PARAMETERS"
 # - gnu99 flag is to address https://gitlab.com/gitlab-org/omnibus-gitlab/-/merge_requests/5948
 # - libcurl-devel is needed to support clone from https remotes
-RUN yum remove -y git \
+RUN yum remove -y git* \
     && yum install -y libcurl-devel \
-    && curl -L -o /tmp/git.tar.gz "https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz" \
-    && tar zxf /tmp/git.tar.gz -C /tmp \
-    && cd "/tmp/git-${GIT_VERSION}/" \
-    && make configure \
-    && ./configure --prefix=/usr \
-    && make all \
-    && make install \
-    && cd / \
-    && rm -rf /tmp/git.tar.gz "/tmp/git-${GIT_VERSION}/" \
+    && env DEVELOPER_CFLAGS='-std=gnu99' /get-git.sh \
     && git --version
 
-RUN curl -L -o /tmp/automake-1.14.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.14.tar.gz \
-    && tar -zxvf /tmp/automake-1.14.tar.gz -C /tmp \
-    && cd /tmp/automake-1.14 \
-    && ./bootstrap.sh \
-    && ./configure \
-    && make \
-    && make install \
-    && automake --version
-
-COPY get-cmake.sh /get-cmake.sh
-RUN env OPENSSL_ROOT_DIR=/usr/local/openssl /get-cmake.sh build
+RUN /get-automake.sh
+RUN /install-openssl11.sh
+ENV OPENSSL_ROOT_DIR=/usr/local/openssl
+RUN /get-cmake.sh build
 
 # We have to reinstall `glibc-common` after removing the override just
 # for the `arm64` platform build of CentOS 7.  While just setting the
@@ -93,7 +85,8 @@ RUN alternatives --install /usr/bin/python python /usr/bin/python2 1 && \
 # cleanup
 RUN yum clean packages && \
     rm -rf /tmp/* && \
-    rm -rf /var/tmp/*
+    rm -rf /var/tmp/* && \
+    rm /install-openssl11.sh /get-git.sh /get-automake.sh /get-cmake.sh
 
 ENV BASH_ENV=/opt/rh/devtoolset-8/enable \
     ENV=/opt/rh/devtoolset-8/enable \

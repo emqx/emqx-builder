@@ -27,7 +27,6 @@ jobs:
           - [ubuntu18.04 , "linux/amd64,linux/arm64"]
           - [debian11    , "linux/amd64,linux/arm64"]
           - [debian10    , "linux/amd64,linux/arm64"]
-          - [debian9     , "linux/amd64,linux/arm64"]
           - [el9         , "linux/amd64,linux/arm64"]
           - [el8         , "linux/amd64,linux/arm64"]
           - [el7         , "linux/amd64,linux/arm64"]

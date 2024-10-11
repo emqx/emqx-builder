@@ -6,6 +6,14 @@ concurrency:
 
 on:
   workflow_dispatch:
+    inputs:
+      base_image_vsn:
+        required: true
+        type: string
+        default: "5.0"
+      ref:
+        required: false
+        type: string
 
 ## Build base images to be used by other github workflows
 jobs:
@@ -16,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         base_image_vsn:
-          - "5.0"
+          - ${{ github.event.inputs.base_image_vsn }}
         platform:
           - [ubuntu24.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
           - [ubuntu24.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
@@ -50,6 +58,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+        with:
+          ref: ${{ github.event.inputs.ref }}
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}

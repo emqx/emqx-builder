@@ -4,20 +4,23 @@ FROM ${BUILD_FROM}
 ENV EMQX_BUILDER_IMAGE=${BUILD_FROM}
 ENV ERL_AFLAGS="-kernel shell_history enabled"
 
-ARG OTP_VERSION=26.2.3-1
-ARG ELIXIR_VERSION=1.15.7
-ARG FDB_VERSION=7.3.27
-ARG EMQTT_BENCH_REF=0.4.17
-ARG LUX_REF=lux-2.9.1
+ARG OTP_VERSION=27.1-1
+ARG ELIXIR_VERSION=1.17.3
+ARG FDB_VERSION=7.3.43
+ARG EMQTT_BENCH_VERSION=0.4.25
+ARG LUX_VERSION=lux-3.0
 
 COPY get-otp.sh get-zsh.sh get-elixir.sh get-fdb.sh get-emqtt-bench.sh get-lux.sh /
 
-RUN /get-zsh.sh && \
+RUN if [ -f /opt/rh/devtoolset-10/enable ]; then source /opt/rh/devtoolset-10/enable; fi && \
+    which gcc && gcc --version && \
+    which g++ && g++ --version && \
+    /get-zsh.sh && \
     /get-otp.sh ${OTP_VERSION} && \
     /get-elixir.sh ${ELIXIR_VERSION} && \    
-    env FDB_VERSION=${FDB_VERSION} /get-fdb.sh && \
-    env EMQTT_BENCH_REF=${EMQTT_BENCH_REF} /get-emqtt-bench.sh && \
-    env LUX_REF=${LUX_REF} /get-lux.sh && \
+    /get-fdb.sh ${FDB_VERSION} && \
+    /get-emqtt-bench.sh ${EMQTT_BENCH_VERSION} && \
+    /get-lux.sh ${LUX_VERSION} && \
     rm /get-otp.sh /get-zsh.sh /get-elixir.sh /get-fdb.sh /get-emqtt-bench.sh /get-lux.sh
 
 WORKDIR /

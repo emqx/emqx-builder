@@ -6,8 +6,8 @@ all: $(IMAGES)
 .PHONY: $(IMAGES)
 define gen-build-image-target
 $1:
-	@docker build -t ghcr.io/emqx/emqx-builder:$1-base $1
-	@docker build --build-arg BUILD_FROM=ghcr.io/emqx/emqx-builder:$1-base -t ghcr.io/emqx/emqx-builder:$1 .
+	@docker build . -t ghcr.io/emqx/emqx-builder:$1-base -f $1/Dockerfile --progress plain
+	@docker build --build-arg BUILD_FROM=ghcr.io/emqx/emqx-builder:$1-base -t ghcr.io/emqx/emqx-builder:$1 --progress plain .
 endef
 $(foreach img,$(IMAGES),$(eval $(call gen-build-image-target,$(img))))
 

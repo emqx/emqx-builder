@@ -14,55 +14,103 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      otp: ${{ steps.otp.outputs.version }}
-      elixir: ${{ steps.elixir.outputs.version }}
+      matrix: ${{ steps.versions.outputs.matrix }}
+      final_matrix: ${{ steps.versions.outputs.final_matrix }}
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
-    - name: get otp_version
-      id: otp
+    - name: get release versions
+      id: versions
       run: |
-        otp_version=$(grep -E "^\+\sOTP-.*" ./RELEASE.md | sed 's/\+\sOTP-//g' | jq -R -s -c 'split("\n")[:-1]')
-        echo "version=$otp_version" >> $GITHUB_OUTPUT
-    - name: get elixir_version
-      id: elixir
-      run: |
-        elixir_version=$(grep -E "^\+\sElixir-.*" ./RELEASE.md | sed 's/\+\sElixir-//g' | jq -R -s -c 'split("\n")[:-1]')
-        echo "version=$elixir_version" >> $GITHUB_OUTPUT
+        #!/bin/bash
+        versions="$(grep -E "^\+\sOTP-.*" ./RELEASE.md | \
+          sed -E 's/\+\sOTP-([0-9.-]*),Elixir-([0-9.]*).*/{"otp":"\1","elixir":"\2"}/g' | \
+          jq -sc .)"
+
+        platforms='[
+          {"os": "ubuntu24.04", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "ubuntu24.04", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "ubuntu22.04", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "ubuntu22.04", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "ubuntu20.04", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "ubuntu20.04", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "ubuntu18.04", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "ubuntu18.04", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "debian12", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "debian12", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "debian11", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "debian11", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "debian10", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "debian10", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "el9", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "el9", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "el8", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "el8", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "el7", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "el7", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "amzn2", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "amzn2", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "amzn2023", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "amzn2023", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
+          {"os": "alpine3.15.1", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "alpine3.15.1", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]}
+        ]'
+
+        final_platforms='[
+          {"os": "ubuntu24.04", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "ubuntu22.04", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "ubuntu20.04", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "ubuntu18.04", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "debian12", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "debian11", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "debian10", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "el9", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "el8", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "el7", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "amzn2", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "amzn2023", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
+          {"os": "alpine3.15.1", "runner": ["self-hosted", "linux", "x64", "ephemeral"]}
+        ]'
+
+        matrix="$(jq -cn \
+          --argjson versions "$versions" \
+          --argjson platforms "$platforms" \
+          '[
+            $versions[] as $version |
+            $platforms[] as $platform |
+            {
+              base_image_vsn: "5.0",
+              otp: $version.otp,
+              elixir: $version.elixir,
+              platform: $platform
+            }
+          ]')"
+
+        final_matrix="$(jq -cn \
+          --argjson versions "$versions" \
+          --argjson platforms "$final_platforms" \
+          '[
+            $versions[] as $version |
+            $platforms[] as $platform |
+            {
+              base_image_vsn: "5.0",
+              otp: $version.otp,
+              elixir: $version.elixir,
+              platform: $platform
+            }
+          ]')"
+
+        echo "matrix=$matrix" | tee -a $GITHUB_OUTPUT
+        echo "final_matrix=$final_matrix" | tee -a $GITHUB_OUTPUT
 
   base:
-    runs-on: ${{ github.repository_owner == 'emqx' && matrix.platform[2] || '["ubuntu-latest"]' }}
+    runs-on: ${{ github.repository_owner == 'emqx' && matrix.platform.runner || '["ubuntu-latest"]' }}
+    needs:
+      - prepare
+
     strategy:
       fail-fast: false
       matrix:
-        base_image_vsn:
-          - "5.0"
-        platform:
-          - [ubuntu24.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [ubuntu24.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [ubuntu22.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [ubuntu22.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [ubuntu20.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [ubuntu20.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [ubuntu18.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [ubuntu18.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [debian12, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [debian12, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [debian11, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [debian11, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [debian10, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [debian10, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [el9, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [el9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [el8, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [el8, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [el7, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [el7, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [amzn2, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [amzn2, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [amzn2023, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [amzn2023, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [alpine3.15.1, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [alpine3.15.1, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+        include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
 
     env:
       REGISTRY_IMAGE: ghcr.io/${{ github.repository }}/base-${{ matrix.base_image_vsn }}
@@ -77,9 +125,9 @@ jobs:
       - name: define base tag
         id: base_tag
         run: |
-          PLATFORM=${{ matrix.platform[1] }}
+          PLATFORM=${{ matrix.platform.arch }}
           ARCH=${PLATFORM#linux/}
-          echo "tag=${{ matrix.platform[0] }}-${ARCH}" | tee -a $GITHUB_OUTPUT
+          echo "tag=${{ matrix.platform.os }}-${ARCH}" | tee -a $GITHUB_OUTPUT
       - name: Get cache
         run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ steps.base_tag.outputs.tag }} /tmp/.docker-buildx-cache
       - uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
@@ -102,16 +150,17 @@ jobs:
           push: true
           cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
           cache-to: type=local,dest=/tmp/.docker-buildx-cache-new,mode=max
-          platforms: ${{ matrix.platform[1] }}
+          platforms: ${{ matrix.platform.arch }}
           tags: ${{ steps.base_meta.outputs.tags }}
           labels: ${{ steps.base_meta.outputs.labels }}
-          file: ${{ matrix.platform[0] }}/Dockerfile
+          file: ${{ matrix.platform.os }}/Dockerfile
           context: .
       - name: Update cache
         run: aws s3 sync --delete /tmp/.docker-buildx-cache-new s3://docker-buildx-cache/emqx-builder/${{ steps.base_tag.outputs.tag }}
 
   build:
-    runs-on: ${{ github.repository_owner == 'emqx' && matrix.platform[2] || '["ubuntu-latest"]' }}
+    name: ${{ matrix.platform.os }} ${{ matrix.platform.arch }} OTP-${{ matrix.otp }} Elixir-${{ matrix.elixir }}
+    runs-on: ${{ github.repository_owner == 'emqx' && matrix.platform.runner || 'ubuntu-latest' }}
     needs:
       - prepare
       - base
@@ -119,37 +168,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image_vsn:
-          - "5.0"
-        otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
-        elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
-        platform:
-          - [ubuntu24.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [ubuntu24.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [ubuntu22.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [ubuntu22.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [ubuntu20.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [ubuntu20.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [ubuntu18.04, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [ubuntu18.04, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [debian12, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [debian12, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [debian11, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [debian11, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [debian10, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [debian10, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [el9, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [el9, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [el8, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [el8, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [el7, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [el7, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [amzn2, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [amzn2, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [amzn2023, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [amzn2023, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
-          - [alpine3.15.1, linux/amd64, [self-hosted, linux, x64, ephemeral]]
-          - [alpine3.15.1, linux/arm64, [self-hosted, linux, arm64, ephemeral]]
+        include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
 
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
@@ -174,18 +193,36 @@ jobs:
     - name: define base tag
       id: base_tag
       run: |
-        PLATFORM=${{ matrix.platform[1] }}
+        PLATFORM=${{ matrix.platform.arch }}
         ARCH="${PLATFORM#linux/}"
-        TAG="${{ matrix.platform[0] }}-${ARCH}"
+        TAG="${{ matrix.platform.os }}-${ARCH}"
         echo "tag=${TAG}" | tee -a $GITHUB_OUTPUT
         echo "image=ghcr.io/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${TAG}" | tee -a $GITHUB_OUTPUT
     - uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
-      id: build
+      id: build_24
+      if: ${{ startsWith(matrix.otp, '24') }}
       with:
         pull: true
         no-cache: true
-        platforms: ${{ matrix.platform[1] }}
+        platforms: ${{ matrix.platform.arch }}
         labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          BUILD_FROM=${{ steps.base_tag.outputs.image }}
+          OTP_VERSION=${{ matrix.otp }}
+          ELIXIR_VERSION=${{ matrix.elixir }}
+          BUILD_WITHOUT_QUIC=1
+          EMQTT_BENCH_VERSION=0.4.5
+          LUX_VERSION=lux-2.6
+        file: ./Dockerfile
+        context: .
+        outputs: type=image,name=${{ steps.registry.outputs.image }},push-by-digest=true,name-canonical=true,push=true
+    - uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
+      id: build_not_24
+      if: ${{ ! startsWith(matrix.otp, '24') }}
+      with:
+        pull: true
+        no-cache: true
+        platforms: ${{ matrix.platform.arch }}
         build-args: |
           BUILD_FROM=${{ steps.base_tag.outputs.image }}
           OTP_VERSION=${{ matrix.otp }}
@@ -194,14 +231,29 @@ jobs:
         context: .
         outputs: type=image,name=${{ steps.registry.outputs.image }},push-by-digest=true,name-canonical=true,push=true
     - name: Export digests
+      if: ${{ startsWith(matrix.otp, '24') }}
       run: |
         mkdir -p /tmp/digests
-        digest="${{ steps.build.outputs.digest }}"
+        digest="${{ steps.build_24.outputs.digest }}"
         touch "/tmp/digests/${digest#sha256:}"
     - name: Upload digest
       uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
       with:
-        name: "digests-${{ matrix.platform[0] }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ matrix.platform[1] == 'linux/amd64' && 'amd64' || 'arm64' }}"
+        name: "digests-${{ matrix.platform.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ matrix.platform.arch == 'linux/amd64' && 'amd64' || 'arm64' }}"
+        path: /tmp/digests/*
+        if-no-files-found: error
+        retention-days: 1
+
+    - name: Export digests
+      if: ${{ ! startsWith(matrix.otp, '24') }}
+      run: |
+        mkdir -p /tmp/digests
+        digest="${{ steps.build_not_24.outputs.digest }}"
+        touch "/tmp/digests/${digest#sha256:}"
+    - name: Upload digest
+      uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+      with:
+        name: "digests-${{ matrix.platform.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ matrix.platform.arch == 'linux/amd64' && 'amd64' || 'arm64' }}"
         path: /tmp/digests/*
         if-no-files-found: error
         retention-days: 1
@@ -214,24 +266,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image_vsn:
-          - "5.0"
-        otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
-        elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
-        platform:
-          - ubuntu24.04
-          - ubuntu22.04
-          - ubuntu20.04
-          - ubuntu18.04
-          - debian12
-          - debian11
-          - debian10
-          - el9
-          - el8
-          - el7
-          - amzn2
-          - amzn2023
-          - alpine3.15.1
+        include: ${{ fromJSON(needs.prepare.outputs.final_matrix) }}
 
     steps:
       - name: Get ref
@@ -244,7 +279,7 @@ jobs:
       - name: Download digests
         uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
-          pattern: "digests-${{ matrix.platform }}-${{ matrix.otp }}-${{ matrix.elixir }}-*"
+          pattern: "digests-${{ matrix.platform.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-*"
           path: /tmp/digests
           merge-multiple: true
       - name: Set up Docker Buildx
@@ -255,7 +290,7 @@ jobs:
         with:
           images: ${{ steps.registry.outputs.image }}
           tags: |
-            type=raw,value=${{ matrix.elixir }}-${{ matrix.otp }}-${{ matrix.platform }}
+            type=raw,value=${{ matrix.elixir }}-${{ matrix.otp }}-${{ matrix.platform.os }}
       - name: Login to Docker Hub
         uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3.1.0
         with:

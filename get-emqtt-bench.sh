@@ -2,7 +2,7 @@
 
 set -xeuo pipefail
 
-VSN="${1:-0.4.17}"
+VSN="${1:-0.4.25}"
 
 . /etc/os-release
 if [[ "${ID_LIKE:-}" =~ rhel|fedora ]]; then

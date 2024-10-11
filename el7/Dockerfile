@@ -17,8 +17,8 @@ RUN yum groupinstall -y "Development Tools" && \
                    cyrus-sasl \
                    cyrus-sasl-devel \
                    cyrus-sasl-gssapi \
-                   devtoolset-8-gcc \
-                   devtoolset-8-gcc-c++ \
+                   devtoolset-10-gcc \
+                   devtoolset-10-gcc-c++ \
                    expect \
                    flex-devel \
                    jq \
@@ -88,9 +88,9 @@ RUN yum clean packages && \
     rm -rf /var/tmp/* && \
     rm /install-openssl11.sh /get-git.sh /get-automake.sh /get-cmake.sh
 
-ENV BASH_ENV=/opt/rh/devtoolset-8/enable \
-    ENV=/opt/rh/devtoolset-8/enable \
-    PROMPT_COMMAND=". /opt/rh/devtoolset-8/enable"
+ENV BASH_ENV=/opt/rh/devtoolset-10/enable \
+    ENV=/opt/rh/devtoolset-10/enable \
+    PROMPT_COMMAND=". /opt/rh/devtoolset-10/enable"
 
 # Elixir complains if runs without UTF-8
 # CentOS 7, exceptionally, has an `en_US.UTF-8` override as does not

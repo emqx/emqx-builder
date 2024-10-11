@@ -8,6 +8,8 @@ if [ "${ARCH}" != "x86_64" ]; then
     exit 0
 fi
 
+FDB_VERSION=${1:-7.3.43}
+
 BASE_URL="https://github.com/apple/foundationdb/releases/download/${FDB_VERSION}"
 . /etc/os-release
 if [[ "${ID_LIKE:-}" =~ rhel|fedora ]]; then

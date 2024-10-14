@@ -230,19 +230,12 @@ jobs:
         file: ./Dockerfile
         context: .
         outputs: type=image,name=${{ steps.registry.outputs.image }},push-by-digest=true,name-canonical=true,push=true
-    - name: Export digests
+    - name: Export digests (OTP 24)
       if: ${{ startsWith(matrix.otp, '24') }}
       run: |
         mkdir -p /tmp/digests
         digest="${{ steps.build_24.outputs.digest }}"
         touch "/tmp/digests/${digest#sha256:}"
-    - name: Upload digest
-      uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
-      with:
-        name: "digests-${{ matrix.platform.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ matrix.platform.arch == 'linux/amd64' && 'amd64' || 'arm64' }}"
-        path: /tmp/digests/*
-        if-no-files-found: error
-        retention-days: 1
 
     - name: Export digests
       if: ${{ ! startsWith(matrix.otp, '24') }}
@@ -250,6 +243,7 @@ jobs:
         mkdir -p /tmp/digests
         digest="${{ steps.build_not_24.outputs.digest }}"
         touch "/tmp/digests/${digest#sha256:}"
+
     - name: Upload digest
       uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
       with:

@@ -43,6 +43,12 @@ case "$(uname -m):${OTP_VERSION}" in
         # ARM64 as a workaround while investigating the root cause.
         extra_config="${extra_config} --disable-jit"
         ;;
+    *:24*)
+        # OTP 24 does not play well with OpenSSL 3 which is installed by default on newer platforms
+        if [ -d /usr/local/openssl-1.1.1 ]; then
+            extra_config="--with-ssl=/usr/local/openssl-1.1.1"
+        fi
+        ;;
     *)
         ;;
 esac

@@ -3,37 +3,33 @@ FROM ${BUILD_FROM}
 
 RUN dnf -y update && dnf -y groupinstall development
 RUN dnf -y install \
+    cyrus-sasl \
+    cyrus-sasl-devel \
+    cyrus-sasl-gssapi \
+    expect \
     jq \
+    krb5-devel \
+    krb5-server \
+    krb5-workstation \
     libatomic \
     ncurses-devel \
     openssl-devel \
     perl-FindBin \
-    python3-pip \
     procps-ng \
+    python3-pip \
     systemd \
     vim \
     wget \
     which
 
-RUN dnf -y install \
-    krb5-workstation \
-    krb5-devel \
-    cyrus-sasl-devel \
-    cyrus-sasl \
-    cyrus-sasl-gssapi
-
-# The following is not necessary for Kerberos authentication but makes testing
-# https://github.com/kafka4beam/sasl_auth easier
-RUN dnf -y install \
-    krb5-server \
-    expect
-
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
 WORKDIR /
 
-COPY get-cmake.sh /get-cmake.sh
-RUN /get-cmake.sh build
+COPY el9/openssl11.sh get-cmake.sh /
+
+RUN /openssl11.sh && rm /openssl11.sh
+RUN /get-cmake.sh build && rm /get-cmake.sh
 
 RUN wget ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-2.3.11.tar.gz && \
     tar xzf unixODBC-2.3.11.tar.gz && \

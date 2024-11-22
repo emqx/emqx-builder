@@ -56,7 +56,7 @@ RUN apt-get update && \
 
 WORKDIR /
 
-ARG PYTHON_VERSION=3.9.2
+ARG PYTHON_VERSION=3.9.20
 RUN wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz \
     && tar xvf Python-${PYTHON_VERSION}.tgz \
     && cd Python-${PYTHON_VERSION} \

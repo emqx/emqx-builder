@@ -51,12 +51,13 @@ RUN apt-get update && \
       wget \
       zip \
       zlib1g-dev && \
-    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 90 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11 && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 7 --slave /usr/bin/g++ g++ /usr/bin/g++-7 --slave /usr/bin/gcov gcov /usr/bin/gcov-7 && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /
 
-ARG PYTHON_VERSION=3.9.2
+ARG PYTHON_VERSION=3.9.20
 RUN wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz \
     && tar xvf Python-${PYTHON_VERSION}.tgz \
     && cd Python-${PYTHON_VERSION} \

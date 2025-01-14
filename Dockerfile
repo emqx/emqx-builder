@@ -5,7 +5,7 @@ ENV EMQX_BUILDER_IMAGE=${BUILD_FROM}
 ENV ERL_AFLAGS="-kernel shell_history enabled"
 
 ARG BUILD_WITHOUT_QUIC=false
-ARG OTP_VERSION=27.1-1
+ARG OTP_VERSION=27.2-2
 ARG ELIXIR_VERSION=1.17.3
 ARG FDB_VERSION=7.3.43
 ARG EMQTT_BENCH_VERSION=0.4.25
@@ -20,7 +20,7 @@ RUN if [ -f /opt/rh/devtoolset-10/enable ]; then source /opt/rh/devtoolset-10/en
     which g++ && g++ --version && \
     /get-zsh.sh && \
     /get-otp.sh ${OTP_VERSION} && \
-    /get-elixir.sh ${ELIXIR_VERSION} && \    
+    /get-elixir.sh ${ELIXIR_VERSION} && \
     /get-fdb.sh ${FDB_VERSION} && \
     /get-emqtt-bench.sh ${EMQTT_BENCH_VERSION} && \
     /get-lux.sh ${LUX_VERSION} && \

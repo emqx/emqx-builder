@@ -10,7 +10,9 @@ ROOT='/'
 cd "$ROOT"
 
 name="OTP-${OTP_VERSION}"
-curl --silent --show-error -fkL "https://github.com/emqx/otp/archive/${name}.zip" -o "${name}.zip"
+download_url="https://github.com/emqx/otp/archive/${name}.zip"
+echo "Downloading ${download_url}"
+curl --silent --show-error -fkL ${download_url} -o "${name}.zip"
 
 unzip -q "$name.zip"
 rm -f "$name.zip"

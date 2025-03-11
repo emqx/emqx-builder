@@ -14,8 +14,8 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      otp: ${{ steps.versions.outputs.otp }}
-      elixir: ${{ steps.versions.outputs.elixir }}
+      matrix: ${{ steps.versions.outputs.matrix }}
+      merge_matrix: ${{ steps.versions.outputs.merge_matrix }}
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
     - name: Get target OTP and Elixir versions
@@ -25,9 +25,51 @@ jobs:
         versions="$(grep -E "^\+\sOTP-.*" ./RELEASE.md | \
           sed -E 's/\+\sOTP-([0-9.-]*),Elixir-([0-9.]*).*/{"otp":"\1","elixir":"\2"}/g' | \
           jq -sc .)"
-        echo "$versions"
-        echo "otp=$(echo "$versions" | jq -r '.[].otp' | jq -Rsc 'split("\n")[:-1]')" | tee -a $GITHUB_OUTPUT
-        echo "elixir=$(echo "$versions" | jq -r '.[].elixir' | jq -Rsc 'split("\n")[:-1]')" | tee -a $GITHUB_OUTPUT
+
+        platforms='[
+          "ubuntu24.04",
+          "ubuntu22.04",
+          "ubuntu20.04",
+          "ubuntu18.04",
+          "debian12",   
+          "debian11",   
+          "debian10",   
+          "el9",        
+          "el8",        
+          "el7",         
+          "amzn2",      
+          "amzn2023",   
+          "alpine3.15.1",
+          "alpine3.21.3"
+        ]'
+
+        arhitectures='["amd64", "arm64"]'
+
+        matrix="$(jq -cn \
+          --argjson versions "$versions" \
+          --argjson platforms "$platforms" \
+          --argjson arhitectures "$arhitectures" \
+          '[
+            $versions[] as $version |
+            $platforms[] as $platform |
+            $arhitectures[] as $arch |
+            {
+              base_image_vsn: "5.0",
+              otp: $version.otp,
+              elixir: $version.elixir,
+              platform: $platform,
+              arch: $arch
+            }
+          ]')"
+
+        merge_matrix="$(jq -cn \
+          --argjson matrix "$matrix" \
+          '[
+            $matrix[] | del(.arch)
+          ]')"
+
+        echo "matrix=$matrix" | tee -a $GITHUB_OUTPUT
+        echo "merge_matrix=$merge_matrix" | tee -a $GITHUB_OUTPUT
 
   base:
     name: ${{ matrix.platform }} ${{ matrix.arch }}
@@ -38,26 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image_vsn:
-          - "5.0"
-        arch:
-          - amd64
-          - arm64
-        platform:
-          - ubuntu24.04
-          - ubuntu22.04
-          - ubuntu20.04
-          - ubuntu18.04
-          - debian12
-          - debian11
-          - debian10
-          - el9
-          - el8
-          - el7
-          - amzn2
-          - amzn2023
-          - alpine3.15.1
-          - alpine3.21.3
+        include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
@@ -112,27 +135,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image_vsn:
-          - "5.0"
-        otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
-        elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
-        arch:
-          - amd64
-          - arm64
-        platform:
-          - ubuntu24.04
-          - ubuntu22.04
-          - ubuntu20.04
-          - ubuntu18.04
-          - debian12
-          - debian11
-          - debian10
-          - el9
-          - el8
-          - el7
-          - amzn2
-          - amzn2023
-          - alpine3.15.1
+        include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
 
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
@@ -222,24 +225,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image_vsn:
-          - "5.0"
-        otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
-        elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
-        platform:
-          - ubuntu24.04
-          - ubuntu22.04
-          - ubuntu20.04
-          - ubuntu18.04
-          - debian12
-          - debian11
-          - debian10
-          - el9
-          - el8
-          - el7
-          - amzn2
-          - amzn2023
-          - alpine3.15.1
+        include: ${{ fromJSON(needs.prepare.outputs.merge_matrix) }}
 
     steps:
       - name: Get ref

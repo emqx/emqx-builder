@@ -10,6 +10,7 @@ on:
 jobs:
   sanity-checks:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
       - name: Check workflow files
@@ -26,72 +27,52 @@ jobs:
     needs:
       - sanity-checks
     outputs:
-      matrix: ${{ steps.versions.outputs.matrix }}
+      otp: ${{ steps.versions.outputs.otp }}
+      elixir: ${{ steps.versions.outputs.elixir }}
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
-    - name: get release versions
+    - name: Get target OTP and Elixir versions
       id: versions
       run: |
         #!/bin/bash
         versions="$(grep -E "^\+\sOTP-.*" ./RELEASE.md | \
           sed -E 's/\+\sOTP-([0-9.-]*),Elixir-([0-9.]*).*/{"otp":"\1","elixir":"\2"}/g' | \
           jq -sc .)"
-
-        platforms='[
-          {"os": "ubuntu24.04", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "ubuntu24.04", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "ubuntu22.04", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "ubuntu22.04", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "ubuntu20.04", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "ubuntu20.04", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "ubuntu18.04", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "ubuntu18.04", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "debian12", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "debian12", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "debian11", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "debian11", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "debian10", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "debian10", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "el9", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "el9", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "el8", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "el8", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "el7", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "el7", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "amzn2", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "amzn2", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "amzn2023", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "amzn2023", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]},
-          {"os": "alpine3.15.1", "arch": "linux/amd64", "runner": ["self-hosted", "linux", "x64", "ephemeral"]},
-          {"os": "alpine3.15.1", "arch": "linux/arm64", "runner": ["self-hosted", "linux", "arm64", "ephemeral"]}
-        ]'
-
-        matrix="$(jq -cn \
-          --argjson versions "$versions" \
-          --argjson platforms "$platforms" \
-          '[
-            $versions[] as $version |
-            $platforms[] as $platform |
-            {
-              base_image_vsn: "5.0",
-              otp: $version.otp,
-              elixir: $version.elixir,
-              platform: $platform
-            }
-          ]')"
-
-        echo "matrix=$matrix" | tee -a $GITHUB_OUTPUT
+        echo "$versions"
+        echo "otp=$(echo "$versions" | jq -r '.[].otp' | jq -Rsc 'split("\n")[:-1]')" | tee -a $GITHUB_OUTPUT
+        echo "elixir=$(echo "$versions" | jq -r '.[].elixir' | jq -Rsc 'split("\n")[:-1]')" | tee -a $GITHUB_OUTPUT
 
   build:
-    name: ${{ matrix.platform.os }} ${{ matrix.platform.arch }} OTP-${{ matrix.otp }} Elixir-${{ matrix.elixir }}
-    runs-on: ${{ github.repository_owner == 'emqx' && matrix.platform.runner || 'ubuntu-latest' }}
+    name: ${{ matrix.platform }} ${{ matrix.arch }} OTP-${{ matrix.otp }} Elixir-${{ matrix.elixir }}
+    runs-on: ${{ github.repository_owner == 'emqx' && format('aws-ubuntu22.04-{0}', matrix.arch) || (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') }}
+
     needs:
       - prepare
 
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+        base_image_vsn:
+          - "5.0"
+        otp: ${{ fromJSON(needs.prepare.outputs.otp) }}
+        elixir: ${{ fromJSON(needs.prepare.outputs.elixir) }}
+        arch:
+          - amd64
+          - arm64
+        platform:
+          - ubuntu24.04
+          - ubuntu22.04
+          - ubuntu20.04
+          - ubuntu18.04
+          - debian12
+          - debian11
+          - debian10
+          - el9
+          - el8
+          - el7
+          - amzn2
+          - amzn2023
+          - alpine3.15.1
 
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
@@ -108,9 +89,7 @@ jobs:
     - name: define base tag
       id: base_tag
       run: |
-        PLATFORM=${{ matrix.platform.arch }}
-        ARCH="${PLATFORM#linux/}"
-        TAG="${{ matrix.platform.os }}-${ARCH}"
+        TAG="${{ matrix.platform }}-${{ matrix.arch }}"
         echo "tag=${TAG}" | tee -a $GITHUB_OUTPUT
         echo "image=ghcr.io/${{ github.repository }}/base-${{ matrix.base_image_vsn }}:${TAG}" | tee -a $GITHUB_OUTPUT
     - name: Get cache
@@ -122,7 +101,7 @@ jobs:
     - uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
       if: ${{ startsWith(matrix.otp, '24') }}
       with:
-        platforms: ${{ matrix.platform.arch }}
+        platforms: linux/${{ matrix.arch }}
         cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
         build-args: |
           BUILD_FROM=${{ steps.base_tag.outputs.image }}
@@ -136,7 +115,7 @@ jobs:
     - uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
       if: ${{ ! startsWith(matrix.otp, '24') }}
       with:
-        platforms: ${{ matrix.platform.arch }}
+        platforms: "linux/${{ matrix.arch }}"
         cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
         build-args: |
           BUILD_FROM=${{ steps.base_tag.outputs.image }}

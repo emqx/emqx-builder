@@ -73,6 +73,7 @@ jobs:
           - amzn2
           - amzn2023
           - alpine3.15.1
+          - alpine3.21.3
 
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4

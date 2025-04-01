@@ -3,10 +3,9 @@
 ## This script prints out all the possible emqx-builder docker image tags built from the latest git tag
 
 GREP='grep --color=never'
-ALL_SYS="$($GREP -A28 'platforms=' .github/workflows/main.yaml | \
-            $GREP -oE '{.*}' | \
-            jq .os | \
-            tr -d '"' | \
+ALL_SYS="$($GREP -A15 'platforms=' .github/workflows/main.yaml | \
+            $GREP '\".*\"' | \
+            tr -d '" ,' | \
             sort -u)"
 
 GIT_TAG="$(git describe --abbrev=0 --tags)"

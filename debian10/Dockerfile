@@ -4,6 +4,18 @@ FROM ${BUILD_FROM}
 # Avoid getting asked questions during installation (tzdata)
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Update sources.list to use archive repositories for Debian 10 (Buster)
+RUN echo "deb http://archive.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list && \
+    echo "deb http://archive.debian.org/debian buster-updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb http://archive.debian.org/debian-security buster/updates main contrib non-free" >> /etc/apt/sources.list
+
+RUN apt-get update && apt-get install -y ca-certificates
+
+# Use https endpoints
+RUN echo "deb https://archive.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list && \
+    echo "deb https://archive.debian.org/debian buster-updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb https://archive.debian.org/debian-security buster/updates main contrib non-free" >> /etc/apt/sources.list
+
 RUN apt-get update && apt-get install -y \
     autoconf \
     automake \

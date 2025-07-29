@@ -30,7 +30,7 @@ jobs:
       matrix: ${{ steps.versions.outputs.matrix }}
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
-    - name: Get target OTP and Elixir versions
+    - name: Get target OTP, Elixir and Rust versions
       id: versions
       run: |
         #!/bin/bash
@@ -43,14 +43,14 @@ jobs:
           "ubuntu22.04",
           "ubuntu20.04",
           "ubuntu18.04",
-          "debian12",   
-          "debian11",   
-          "debian10",   
-          "el9",        
-          "el8",        
-          "el7",         
-          "amzn2",      
-          "amzn2023",   
+          "debian12",
+          "debian11",
+          "debian10",
+          "el9",
+          "el8",
+          "el7",
+          "amzn2",
+          "amzn2023",
           "alpine3.15.1",
           "alpine3.21.3"
         ]'
@@ -77,7 +77,7 @@ jobs:
         echo "matrix=$matrix" | tee -a $GITHUB_OUTPUT
 
   build:
-    name: ${{ matrix.platform }} ${{ matrix.arch }} OTP-${{ matrix.otp }} Elixir-${{ matrix.elixir }}
+    name: ${{ matrix.platform }} ${{ matrix.arch }} OTP-${{ matrix.otp }} Elixir-${{ matrix.elixir }} Rust-${{ matrix.rust }}
     runs-on: ${{ github.repository_owner == 'emqx' && format('aws-ubuntu22.04-{0}', matrix.arch) || (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') }}
 
     needs:

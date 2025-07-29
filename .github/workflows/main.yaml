@@ -23,7 +23,7 @@ jobs:
       run: |
         #!/bin/bash
         versions="$(grep -E "^\+\sOTP-.*" ./RELEASE.md | \
-          sed -E 's/\+\sOTP-([0-9.-]*),Elixir-([0-9.]*).*/{"otp":"\1","elixir":"\2"}/g' | \
+          sed -E 's/\+\sOTP-([0-9.-]*),Elixir-([0-9.-]*),Rust-([0-9.]*).*/{"otp":"\1","elixir":"\2","rust":"\3"}/g' | \
           jq -sc .)"
 
         platforms='[
@@ -57,6 +57,7 @@ jobs:
               base_image_vsn: "5.0",
               otp: $version.otp,
               elixir: $version.elixir,
+              rust: $version.rust,
               platform: $platform,
               arch: $arch
             }
@@ -175,6 +176,7 @@ jobs:
           BUILD_FROM=${{ steps.base_tag.outputs.image }}
           OTP_VERSION=${{ matrix.otp }}
           ELIXIR_VERSION=${{ matrix.elixir }}
+          RUST_VERSION=${{ matrix.rust }}
           BUILD_WITHOUT_QUIC=1
           EMQTT_BENCH_VERSION=0.4.5
           LUX_VERSION=lux-2.6

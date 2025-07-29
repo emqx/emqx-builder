@@ -71,5 +71,9 @@ ENV PATH=/usr/local/python3.7.4/bin:$PATH
 RUN apt-get clean\
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Install Rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+ENV PATH="/root/.cargo/bin:${PATH}"
+
 WORKDIR /
 CMD [ "/bin/bash" ]

@@ -95,4 +95,8 @@ RUN /get-cmake.sh build && rm /get-cmake.sh
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
+# Install Rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+ENV PATH="/root/.cargo/bin:${PATH}"
+
 CMD [ "/bin/bash" ]

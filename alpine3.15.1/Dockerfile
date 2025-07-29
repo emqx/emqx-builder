@@ -49,4 +49,8 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
+# Install Rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+ENV PATH="/root/.cargo/bin:${PATH}"
+
 CMD [ "/bin/sh" ]

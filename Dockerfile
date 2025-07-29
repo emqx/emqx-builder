@@ -23,7 +23,7 @@ RUN if [ -f /opt/rh/devtoolset-10/enable ]; then source /opt/rh/devtoolset-10/en
     /get-otp.sh ${OTP_VERSION} && \
     /get-elixir.sh ${ELIXIR_VERSION} && \
     if [ "${OTP_VERSION#26.}" != "$OTP_VERSION" ]; then /get-fdb.sh ${FDB_VERSION}; fi && \
-    /get-rust.sh ${RUST_VERSION} && \
+    if echo "${OTP_VERSION}" | grep -q "^27\."; then /get-rust.sh ${RUST_VERSION}; fi && \
     /get-emqtt-bench.sh ${EMQTT_BENCH_VERSION} && \
     /get-lux.sh ${LUX_VERSION} && \
     rm /get-otp.sh /get-zsh.sh /get-elixir.sh /get-fdb.sh /get-emqtt-bench.sh /get-lux.sh

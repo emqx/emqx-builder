@@ -101,8 +101,10 @@ ENV LANG=en_US.UTF-8
 # merge the two dirs
 ENV ACLOCAL_PATH=/usr/share/aclocal:/usr/local/share/aclocal
 
-# Install Rustup
+# Install Rustup to a system-wide location
+ENV RUSTUP_HOME=/usr/local/lib/rustup
+ENV CARGO_HOME=/usr/local/cargo
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
-ENV PATH="/root/.cargo/bin:${PATH}"
+ENV PATH="/usr/local/cargo/bin:${PATH}"
 
 CMD [ "/bin/bash" ]

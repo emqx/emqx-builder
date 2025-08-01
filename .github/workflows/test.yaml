@@ -127,14 +127,13 @@ jobs:
           LUX_VERSION=${{ startsWith(matrix.otp, '24') && 'lux-2.6' || '' }}
         file: ./Dockerfile
         context: .
-    - name: Test OTP 27 Image (Rust should exist)
+    - name: Test OTP 27 Image (Rust Toolchain should be installed)
       if: startsWith(matrix.otp, '27')
       run: |
-        docker run --rm test-image:latest bash -c "rustup --version && cargo --version"
-    - name: Test non-OTP 27 Image (Rust should NOT exist)
+        docker run --rm test-image:latest bash -c 'rustup toolchain list' | \
+          grep "1.88.0"
+    - name: Test non-OTP 27 Image (Rust Toolchain should NOT be installed)
       if: "!startsWith(matrix.otp, '27')"
       run: |
-        if docker run --rm test-image:latest bash -c "command -v rustup"; then
-          echo "Error: rustup was found in an image where it should not be."
-          exit 1
-        fi
+        docker run --rm test-image:latest bash -c 'rustup toolchain list' | \
+          grep "no installed toolchains"

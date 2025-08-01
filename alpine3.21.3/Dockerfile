@@ -47,8 +47,10 @@ RUN apk add --no-cache --virtual .build-deps \
 COPY get-cmake.sh /get-cmake.sh
 RUN /get-cmake.sh build
 
-# Install Rustup
+# Install Rustup to a system-wide location
+ENV RUSTUP_HOME=/usr/local/lib/rustup
+ENV CARGO_HOME=/usr/local/cargo
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
-ENV PATH="/root/.cargo/bin:${PATH}"
+ENV PATH="/usr/local/cargo/bin:${PATH}"
 
 CMD [ "/bin/sh" ]

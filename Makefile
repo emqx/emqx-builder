@@ -1,4 +1,4 @@
-IMAGES = alpine3.15.1 alpine3.21.3 amzn2 amzn2023 debian11 debian12 el7 el8 el9 ubuntu18.04 ubuntu20.04 ubuntu22.04 ubuntu24.04
+IMAGES = alpine3.15.1 alpine3.21.3 amzn2 amzn2023 debian11 debian12 debian13 el7 el8 el9 ubuntu18.04 ubuntu20.04 ubuntu22.04 ubuntu24.04
 
 .PHONY: all
 all: $(IMAGES)

@@ -1,4 +1,5 @@
-ARG BUILD_FROM=public.ecr.aws/debian/debian:13
+ARG BUILD_FROM=debian:13
+# TODO: pull public.ecr.aws/debian/debian:13 when available
 FROM ${BUILD_FROM}
 
 # Avoid getting asked questions during installation (tzdata)

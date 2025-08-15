@@ -35,9 +35,9 @@ jobs:
           - ubuntu22.04
           - ubuntu20.04
           - ubuntu18.04
+          - debian13
           - debian12
           - debian11
-          - debian10
           - el9
           - el8
           - el7

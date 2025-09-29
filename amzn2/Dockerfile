@@ -45,7 +45,7 @@ WORKDIR /
 
 ADD get-cmake.sh get-automake.sh  /
 
-RUN yum remove -y automake && /get-automake.sh && rm /get-automake.sh
+RUN /get-automake.sh && rm /get-automake.sh
 
 RUN /get-cmake.sh build && rm /get-cmake.sh
 

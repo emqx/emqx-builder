@@ -1,15 +1,15 @@
-ARG BUILD_FROM=public.ecr.aws/ubuntu/ubuntu:22.04
+ARG BUILD_FROM=public.ecr.aws/ubuntu/ubuntu:24.04
 FROM ${BUILD_FROM}
 
 ENV EMQX_BUILDER_IMAGE=${BUILD_FROM}
 ENV ERL_AFLAGS="-kernel shell_history enabled"
 
 ARG BUILD_WITHOUT_QUIC=false
-ARG OTP_VERSION=27.3.4.2-1
-ARG ELIXIR_VERSION=1.18.3
+ARG OTP_VERSION=28.1
+ARG ELIXIR_VERSION=1.18.4
 ARG RUST_VERSION=1.88.0
 ARG FDB_VERSION=7.3.43
-ARG EMQTT_BENCH_VERSION=0.4.25
+ARG EMQTT_BENCH_VERSION=0.5.3
 ARG LUX_VERSION=lux-3.0
 
 COPY get-otp.sh get-zsh.sh get-elixir.sh get-fdb.sh get-rust.sh get-emqtt-bench.sh get-lux.sh /

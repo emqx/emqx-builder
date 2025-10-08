@@ -9,7 +9,6 @@ ARG OTP_VERSION=28.1
 ARG ELIXIR_VERSION=1.18.4
 ARG RUST_VERSION=1.88.0
 ARG FDB_VERSION=7.3.43
-ARG EMQTT_BENCH_VERSION=0.5.3
 ARG LUX_VERSION=lux-3.0
 
 COPY get-otp.sh get-zsh.sh get-elixir.sh get-fdb.sh get-rust.sh get-emqtt-bench.sh get-lux.sh /
@@ -24,7 +23,7 @@ RUN if [ -f /opt/rh/devtoolset-10/enable ]; then source /opt/rh/devtoolset-10/en
     /get-elixir.sh ${ELIXIR_VERSION} && \
     if [ "${OTP_VERSION#26.}" != "$OTP_VERSION" ]; then /get-fdb.sh ${FDB_VERSION}; fi && \
     if echo "${OTP_VERSION}" | grep -q "^27\."; then /get-rust.sh ${RUST_VERSION}; fi && \
-    /get-emqtt-bench.sh ${EMQTT_BENCH_VERSION} && \
+    /get-emqtt-bench.sh && \
     /get-lux.sh ${LUX_VERSION} && \
     rm /get-otp.sh /get-zsh.sh /get-elixir.sh /get-fdb.sh /get-emqtt-bench.sh /get-lux.sh
 

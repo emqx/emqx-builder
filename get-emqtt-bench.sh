@@ -2,8 +2,6 @@
 
 set -xeuo pipefail
 
-VSN="${1:-0.5.3}"
-
 . /etc/os-release
 if [[ "${ID_LIKE:-}" =~ rhel|fedora ]]; then
     DIST='el'
@@ -29,6 +27,29 @@ case "$SYSTEM" in
     *)
         true
         ;;
+esac
+
+OTP_VERSION="$(erl -eval 'io:format("~s", [erlang:system_info(otp_release)]), halt().' -noshell)"
+
+case "${OTP_VERSION}" in
+    28*)
+        VSN="${1:-0.5.5}"
+        ;;
+    27*)
+        VSN="${1:-0.5.2}"
+        ;;
+    26*)
+        VSN="${1:-0.5.0}"
+        ;;
+    25*)
+        VSN="${1:-0.5.0}"
+        ;;
+    24*)
+        VSN="${1:-0.4.17}"
+        ;;
+    *)
+        echo "OTP_VERSION is invalid: ${OTP_VERSION}"
+        exit 1
 esac
 
 git clone --depth=1 --branch="${VSN}" https://github.com/emqx/emqtt-bench.git /emqtt-bench

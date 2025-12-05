@@ -17,6 +17,7 @@ RUN dnf -y update && \
       ncurses-devel \
       openssl-devel \
       perl \
+      protobuf-compiler \
       python3-pip \
       unixODBC \
       unixODBC-devel \

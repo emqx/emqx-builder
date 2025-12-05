@@ -30,6 +30,7 @@ RUN apt-get update && apt-get install -y \
     libsasl2-modules-gssapi-mit \
     libssl-dev \
     libtool \
+    protobuf-compiler \
     python3 \
     python3-pip \
     software-properties-common \

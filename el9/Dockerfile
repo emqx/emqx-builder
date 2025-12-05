@@ -10,6 +10,7 @@ RUN dnf -y install \
     perl-FindBin \
     python3-pip \
     procps-ng \
+    protobuf-compiler \
     systemd \
     vim \
     wget \

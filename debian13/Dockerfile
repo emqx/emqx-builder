@@ -30,6 +30,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libtool \
     procps \
+    protobuf-compiler \
     python3 \
     python3-pip \
     unixodbc \

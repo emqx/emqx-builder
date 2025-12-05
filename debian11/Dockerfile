@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y \
     libtool \
     make \
     procps \
+    protobuf-compiler \
     python3 \
     python3-pip \
     unixodbc \

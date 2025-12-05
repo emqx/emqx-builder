@@ -14,6 +14,7 @@ RUN yum install -y autoconf \
                    ncurses-devel \
                    openssl \
                    openssl-devel \
+                   protobuf-compiler \
                    python3 \
                    python3-pip \
                    systemd \

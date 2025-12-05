@@ -10,7 +10,6 @@ RUN dnf -y install \
     perl-FindBin \
     python3-pip \
     procps-ng \
-    protobuf-compiler \
     systemd \
     vim \
     wget \
@@ -30,6 +29,10 @@ RUN dnf -y install \
     expect
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
+
+COPY el9/get-protoc.sh /get-protoc.sh
+
+RUN /get-protoc.sh
 
 WORKDIR /
 

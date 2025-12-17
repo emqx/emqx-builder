@@ -17,4 +17,5 @@ case $(uname -m) in
 esac
 
 curl -LO "$PB_REL/download/v$VSN/protoc-$VSN-linux-$ARCH.zip"
-unzip "protoc-$VSN-linux-$ARCH.zip" -d /usr/local/bin
+# zip contains `bin/protoc`
+unzip "protoc-$VSN-linux-$ARCH.zip" -d /usr/local/

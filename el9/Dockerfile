@@ -28,6 +28,10 @@ RUN dnf -y install \
     krb5-server \
     expect
 
+# The following is required to build TLS 3 (dependency of msquic)
+RUN dnf -y install \
+    perl-IPC-Cmd
+
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
 COPY el9/get-protoc.sh /get-protoc.sh

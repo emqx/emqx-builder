@@ -40,6 +40,10 @@ RUN yum groupinstall -y "Development Tools" && \
 
 ADD install-openssl11.sh get-git.sh get-automake.sh get-cmake.sh /
 
+COPY el9/get-protoc.sh /get-protoc.sh
+
+RUN /get-protoc.sh
+
 WORKDIR /
 
 # We need git >= 2.18 otherwise actions/checkout@v3 in github

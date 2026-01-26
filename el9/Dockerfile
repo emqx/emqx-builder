@@ -1,4 +1,4 @@
-ARG BUILD_FROM=public.ecr.aws/docker/library/rockylinux:9
+ARG BUILD_FROM=rockylinux/rockylinux:9.6
 FROM ${BUILD_FROM}
 
 RUN dnf -y update && dnf -y groupinstall development

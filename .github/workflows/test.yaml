@@ -127,13 +127,7 @@ jobs:
           LUX_VERSION=${{ startsWith(matrix.otp, '24') && 'lux-2.6' || '' }}
         file: ./Dockerfile
         context: .
-    - name: Test OTP 27 Image (Rust Toolchain should be installed)
-      if: startsWith(matrix.otp, '27')
+    - name: All OTP Image (Rust Toolchain should be installed)
       run: |
         docker run --rm test-image:latest bash -c 'rustup toolchain list' | \
           grep "1.88.0"
-    - name: Test non-OTP 27 Image (Rust Toolchain should NOT be installed)
-      if: "!startsWith(matrix.otp, '27')"
-      run: |
-        docker run --rm test-image:latest bash -c 'rustup toolchain list' | \
-          grep "no installed toolchains"

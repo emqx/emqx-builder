@@ -1,58 +1,50 @@
 ARG BUILD_FROM=rockylinux/rockylinux:9.6
 FROM ${BUILD_FROM}
 
-RUN dnf -y update && dnf -y groupinstall development
+# Disable mirrorlist, enable baseurl, and point to vault for Rocky Linux 9.6
+RUN sed -i 's/^mirrorlist=/#mirrorlist=/g' /etc/yum.repos.d/rocky.repo && \
+    sed -i 's/^#baseurl=/baseurl=/g' /etc/yum.repos.d/rocky.repo && \
+    sed -i 's|dl.rockylinux.org/\$contentdir/\$releasever|dl.rockylinux.org/vault/rocky/9.6|g' /etc/yum.repos.d/rocky.repo
+
+RUN dnf -y groupinstall development
+# perl-IPC-Cmd is required to build TLS 3 (dependency of msquic)
 RUN dnf -y install \
+    cyrus-sasl \
+    cyrus-sasl-devel \
+    cyrus-sasl-gssapi \
+    expect \
     jq \
+    krb5-devel \
+    krb5-server \
+    krb5-workstation \
     libatomic \
     ncurses-devel \
     openssl-devel \
     perl-FindBin \
-    python3-pip \
     procps-ng \
+    python3-pip \
     systemd \
     vim \
     wget \
+    perl-IPC-Cmd \
     which
-
-RUN dnf -y install \
-    krb5-workstation \
-    krb5-devel \
-    cyrus-sasl-devel \
-    cyrus-sasl \
-    cyrus-sasl-gssapi
-
-# The following is not necessary for Kerberos authentication but makes testing
-# https://github.com/kafka4beam/sasl_auth easier
-RUN dnf -y install \
-    krb5-server \
-    expect
-
-# The following is required to build TLS 3 (dependency of msquic)
-RUN dnf -y install \
-    perl-IPC-Cmd
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
-COPY el9/get-protoc.sh /get-protoc.sh
-
-RUN /get-protoc.sh
+ADD el9/get-protoc.sh get-cmake.sh  /
 
 WORKDIR /
 
-COPY get-cmake.sh /get-cmake.sh
-RUN /get-cmake.sh build
-
-RUN wget ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-2.3.11.tar.gz && \
+RUN /get-protoc.sh && \
+    /get-cmake.sh build && \
+    wget ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-2.3.11.tar.gz && \
     tar xzf unixODBC-2.3.11.tar.gz && \
     cd unixODBC-2.3.11 && \
     ./configure && make && make install && \
     cd .. && \
     rm -rf unixODBC-2.3.11 && \
-    rm -f unixODBC-2.3.11.tar.gz
-
-# cleanup
-RUN dnf clean all && \
+    rm -f unixODBC-2.3.11.tar.gz \
+    dnf clean all && \
     rm -rf /tmp/* && \
     rm -rf /var/tmp/*
 

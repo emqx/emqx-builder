@@ -46,6 +46,7 @@ jobs:
           "debian13",
           "debian12",
           "debian11",
+          "el10",
           "el9",
           "el8",
           "el7",

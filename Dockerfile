@@ -8,10 +8,9 @@ ARG BUILD_WITHOUT_QUIC=false
 ARG OTP_VERSION=28.4.1-5
 ARG ELIXIR_VERSION=1.19.1
 ARG RUST_VERSION=1.88.0
-ARG FDB_VERSION=7.3.43
 ARG LUX_VERSION=lux-3.0
 
-COPY get-otp.sh get-zsh.sh get-elixir.sh get-fdb.sh get-rust.sh get-emqtt-bench.sh get-lux.sh /
+COPY get-otp.sh get-zsh.sh get-elixir.sh get-rust.sh get-emqtt-bench.sh get-lux.sh /
 
 RUN if [ -f /opt/rh/devtoolset-10/enable ]; then source /opt/rh/devtoolset-10/enable; fi && \
     . /etc/os-release && export ID=$ID && export VERSION_ID=$VERSION_ID && \
@@ -25,11 +24,10 @@ RUN if [ -f /opt/rh/devtoolset-10/enable ]; then source /opt/rh/devtoolset-10/en
     /get-zsh.sh && \
     /get-otp.sh ${OTP_VERSION} && \
     /get-elixir.sh ${ELIXIR_VERSION} && \
-    if [ "${OTP_VERSION#26.}" != "$OTP_VERSION" ]; then /get-fdb.sh ${FDB_VERSION}; fi && \
     /get-rust.sh ${RUST_VERSION} && \
     /get-emqtt-bench.sh && \
     /get-lux.sh ${LUX_VERSION} && \
-    rm /get-otp.sh /get-zsh.sh /get-elixir.sh /get-fdb.sh /get-emqtt-bench.sh /get-lux.sh
+    rm /get-otp.sh /get-zsh.sh /get-elixir.sh /get-emqtt-bench.sh /get-lux.sh
 
 WORKDIR /
 CMD [ "/bin/zsh" ]

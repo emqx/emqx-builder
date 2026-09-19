@@ -7,4 +7,4 @@ Uncomment older releases when there is an update.
 + OTP-24.3.4.17-2,Elixir-1.15.7
 + OTP-26.2.5.14-1,Elixir-1.15.7
 + OTP-27.3.4.2-8,Elixir-1.18.3
-+ OTP-28.4.1-4,Elixir-1.19.1
++ OTP-28.4.1-5,Elixir-1.19.1

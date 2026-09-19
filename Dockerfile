@@ -15,6 +15,10 @@ COPY get-otp.sh get-zsh.sh get-elixir.sh get-fdb.sh get-rust.sh get-emqtt-bench.
 
 RUN if [ -f /opt/rh/devtoolset-10/enable ]; then source /opt/rh/devtoolset-10/enable; fi && \
     . /etc/os-release && export ID=$ID && export VERSION_ID=$VERSION_ID && \
+    if [ "${ID}" = "debian" ] && [ "${VERSION_ID}" = "11" ]; then \
+        sed -i -e '/debian-security/d' -e 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
+        echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until; \
+    fi && \
     if expr "${OTP_VERSION}" : '24' > /dev/null && [ "${ID}" = "ubuntu" ] && [ "${VERSION_ID}" = "18.04" ]; then update-alternatives --set gcc /usr/bin/gcc-7; fi && \
     which gcc && gcc --version && \
     which g++ && g++ --version && \

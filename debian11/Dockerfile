@@ -4,11 +4,14 @@ FROM ${BUILD_FROM}
 # Avoid getting asked questions during installation (tzdata)
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Bullseye is end of life: its packages are served by archive.debian.org, and
-# the security suite is not published there, so drop it. The archived Release
-# files are expired by design, hence the validity check is turned off.
-RUN sed -i -e '/debian-security/d' \
-           -e 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' \
+# Bullseye is end of life: deb.debian.org no longer serves its packages, and
+# archive.debian.org carries no bullseye security suite. The image ships
+# snapshot.debian.org sources, commented out and pinned to the date it was
+# built, so enable those: they still serve bullseye-security, which the
+# security-updated libraries already installed in the image depend on.
+# Snapshot Release files are expired by design, hence the validity check off.
+RUN sed -i -e 's|^# deb http://snapshot|deb http://snapshot|' \
+           -e '/deb\.debian\.org/d' \
            /etc/apt/sources.list \
  && echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until
 

@@ -3,6 +3,9 @@ FROM ${BUILD_FROM}
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# some packages are convenience tools for local development/investigation/testing:
+#  - iproute2
+#  - python3-venv
 RUN apt-get update && apt-get install -y \
     apt-transport-https \
     autoconf \
@@ -18,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     flex \
     git \
     inotify-tools \
+    iproute2 \
     jq \
     krb5-admin-server \
     krb5-kdc \
@@ -33,6 +37,7 @@ RUN apt-get update && apt-get install -y \
     protobuf-compiler \
     python3 \
     python3-pip \
+    python3-venv \
     software-properties-common \
     unixodbc \
     unixodbc-dev \

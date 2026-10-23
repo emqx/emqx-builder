@@ -177,7 +177,6 @@ jobs:
           ELIXIR_VERSION=${{ matrix.elixir }}
           BUILD_WITHOUT_QUIC=1
           EMQTT_BENCH_VERSION=0.4.5
-          LUX_VERSION=lux-2.6
         file: ./Dockerfile
         context: .
         outputs: type=image,name=${{ steps.registry.outputs.image }},push-by-digest=true,name-canonical=true,push=true

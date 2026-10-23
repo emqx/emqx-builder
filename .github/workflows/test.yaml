@@ -124,7 +124,6 @@ jobs:
           ELIXIR_VERSION=${{ matrix.elixir }}
           BUILD_WITHOUT_QUIC=${{ startsWith(matrix.otp, '24') && 1 || '' }}
           EMQTT_BENCH_VERSION=${{ startsWith(matrix.otp, '24') && '0.4.5' || '' }}
-          LUX_VERSION=${{ startsWith(matrix.otp, '24') && 'lux-2.6' || '' }}
         file: ./Dockerfile
         context: .
     - name: All OTP Image (Rust Toolchain should be installed)

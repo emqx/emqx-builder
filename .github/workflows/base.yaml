@@ -31,6 +31,7 @@ jobs:
           - amd64
           - arm64
         platform:
+          - ubuntu26.04
           - ubuntu24.04
           - ubuntu22.04
           - ubuntu20.04

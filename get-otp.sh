@@ -48,6 +48,11 @@ case "$(uname -m):${OTP_VERSION}" in
     *)
         ;;
 esac
+
+# Compile OTP 24 with C17 on compilers that default to C23.
+if [ "${OTP_VERSION%%.*}" = "24" ] && [ "$(gcc -dumpversion | cut -d. -f1)" -ge 15 ]; then
+    export CC="${CC:-gcc} -std=gnu17"
+fi
 ./configure --disable-hipe ${extra_config}
 
 make -j $(nproc)

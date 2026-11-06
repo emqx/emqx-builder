@@ -20,7 +20,7 @@ RUN if [ -f /opt/rh/devtoolset-10/enable ]; then source /opt/rh/devtoolset-10/en
     if expr "${OTP_VERSION}" : '24' > /dev/null && [ "${ID}" = "ubuntu" ] && [ "${VERSION_ID}" = "18.04" ]; then update-alternatives --set gcc /usr/bin/gcc-7; fi && \
     which gcc && gcc --version && \
     which g++ && g++ --version && \
-    /get-zsh.sh && \
+    if [ "${ID}:${VERSION_ID}" != "debian:11" ]; then /get-zsh.sh; fi && \
     /get-otp.sh ${OTP_VERSION} && \
     /get-elixir.sh ${ELIXIR_VERSION} && \
     /get-rust.sh ${RUST_VERSION} && \
@@ -28,4 +28,4 @@ RUN if [ -f /opt/rh/devtoolset-10/enable ]; then source /opt/rh/devtoolset-10/en
     rm /get-otp.sh /get-zsh.sh /get-elixir.sh /get-emqtt-bench.sh
 
 WORKDIR /
-CMD [ "/bin/zsh" ]
+CMD [ "/bin/sh", "-c", "exec $(command -v zsh || command -v bash)" ]

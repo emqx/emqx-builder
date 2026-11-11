@@ -27,3 +27,10 @@ Where `BUILDER_GIT_TAG` is of scheme `4.4-1` for images to build EMQX
 
 Note that starting from 5.2, we no longer track EMQX versions in the image tag scheme.
 i.e. `emqx-builder:5.2` does not mean it's only intended to build EMQX 5.2.
+
+## CI tools
+
+The Ubuntu 22.04, 24.04 and 26.04 base images include `gitlint`, `shellcheck`,
+`shelltest` (from `shelltestrunner`), and `python3-venv` for EMQX CI checks.
+Consumers can remove their runtime package installation after they pin a builder
+release containing these tools.

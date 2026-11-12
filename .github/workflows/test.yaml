@@ -22,6 +22,36 @@ jobs:
           # TODO: enable shellcheck when all the current issues are fixed
           ./actionlint -color -shellcheck=
 
+  ci-tools:
+    name: CI tools ${{ matrix.platform }} ${{ matrix.arch }}
+    needs: sanity-checks
+    runs-on: ${{ github.repository_owner == 'emqx' && format('aws-ubuntu22.04-{0}', matrix.arch) || (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - ubuntu22.04
+          - ubuntu24.04
+          - ubuntu26.04
+        arch:
+          - amd64
+          - arm64
+    steps:
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+      - name: Build the platform base image
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: docker build -f "$PLATFORM/Dockerfile" -t ci-tools-test .
+      - name: Run the CI tools without installing packages
+        run: |
+          docker run --rm ci-tools-test bash -euc '
+            gitlint --version
+            shellcheck --version
+            shelltest --version
+            python3 -m venv /tmp/ci-tools-venv
+            /tmp/ci-tools-venv/bin/python -m pip --version
+          '
+
   prepare:
     runs-on: ubuntu-latest
     needs:

@@ -96,8 +96,16 @@ jobs:
           echo "tag=${{ matrix.platform }}-${{ matrix.arch }}" | tee -a $GITHUB_OUTPUT
           echo "image=ghcr.io/${{ github.repository }}/base-${{ matrix.base_image_vsn }}" | tee -a $GITHUB_OUTPUT
 
+      - name: Prepare cache directory
+        run: |
+          # Keep both cache copies on the filesystem holding Docker's data.
+          docker_root="$(docker info --format '{{.DockerRootDir}}')"
+          docker_mount="$(findmnt --noheadings --output TARGET --target "$docker_root")"
+          cache_dir="$(sudo mktemp -d "${docker_mount%/}/.docker-buildx-cache.XXXXXX")"
+          echo "BUILDX_CACHE_DIR=$cache_dir" >> "$GITHUB_ENV"
+          sudo chown "$(id -u):$(id -g)" "$cache_dir"
       - name: Get cache
-        run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ steps.base_tag.outputs.tag }} /tmp/.docker-buildx-cache
+        run: aws s3 sync s3://docker-buildx-cache/emqx-builder/${{ steps.base_tag.outputs.tag }} "$BUILDX_CACHE_DIR/cache"
       - uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
       - uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
       - uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3.1.0
@@ -116,15 +124,18 @@ jobs:
         with:
           pull: true
           push: true
-          cache-from: type=local,src=/tmp/.docker-buildx-cache,mode=max
-          cache-to: type=local,dest=/tmp/.docker-buildx-cache-new,mode=max
+          cache-from: type=local,src=${{ env.BUILDX_CACHE_DIR }}/cache,mode=max
+          cache-to: type=local,dest=${{ env.BUILDX_CACHE_DIR }}/cache-new,mode=max
           platforms: linux/${{ matrix.arch }}
           tags: ${{ steps.base_meta.outputs.tags }}
           labels: ${{ steps.base_meta.outputs.labels }}
           file: ${{ matrix.platform }}/Dockerfile
           context: .
       - name: Update cache
-        run: aws s3 sync --delete /tmp/.docker-buildx-cache-new s3://docker-buildx-cache/emqx-builder/${{ steps.base_tag.outputs.tag }}
+        run: aws s3 sync --delete "$BUILDX_CACHE_DIR/cache-new" s3://docker-buildx-cache/emqx-builder/${{ steps.base_tag.outputs.tag }}
+      - name: Clean up cache directory
+        if: ${{ always() && env.BUILDX_CACHE_DIR != '' }}
+        run: sudo rm -rf -- "${BUILDX_CACHE_DIR:?}"
 
   build:
     name: ${{ matrix.platform }} ${{ matrix.arch }} OTP-${{ matrix.otp }} Elixir-${{ matrix.elixir }}
